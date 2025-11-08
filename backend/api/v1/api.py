@@ -1,6 +1,7 @@
 """
 API v1 router.
 """
+
 from fastapi import APIRouter
 
 from api.v1.endpoints import auth, users
