@@ -8,8 +8,12 @@ services:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://tiraz:tiraz_password@postgres:5432/tiraz_db
+      - SECRET_KEY=your-super-secret-jwt-key-change-this-in-production-make-it-long-and-random
     volumes:
       - ./backend:/app
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:15
