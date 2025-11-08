@@ -1,162 +1,273 @@
-# تطبيق طراز - Tiraz Application
+# Tiraz (طِرَاز) - AI Tailoring Application (MVP)
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/Node-18+-green.svg)](https://nodejs.org/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.73-61dafb.svg)](https://reactnative.dev/)
 
-## نظرة عامة - Overview
+## 🎯 Project Vision
 
-**طراز** هو تطبيق ويب نموذجي متكامل مبني باستخدام Flask وPython. يوفر التطبيق نظاماً لإدارة العناصر مع إمكانية تصنيفها حسب الأنماط والتصاميم.
+**Tiraz** is an AI-powered custom tailoring platform designed to eliminate the biggest fears of online tailoring: incorrect sizing and poor fit. By leveraging computer vision and machine learning, Tiraz provides accurate body measurements from photos and enables users to design perfect-fit custom garments.
 
-**Tiraz** is a complete model web application built with Flask and Python. It provides a comprehensive system for managing items with the ability to categorize them by styles and designs.
+### Long-Term Vision
+To build an all-in-one "Fashion-Tech Ecosystem" that becomes the global platform for custom-tailored clothing.
 
-## المميزات - Features
+### Current Scope: MVP (Phase 1)
+This repository contains the **Minimum Viable Product (MVP)** implementation with core features only.
 
-- ✨ **إدارة العناصر الكاملة** - Full CRUD operations for items
-- 🎨 **تصنيف بالأنماط** - Style-based categorization
-- 💾 **قاعدة بيانات SQLite** - SQLite database with SQLAlchemy ORM
-- 🌐 **واجهة ثنائية اللغة** - Bilingual interface (Arabic/English)
-- 📱 **تصميم متجاوب** - Responsive design
-- 🏗️ **معماري MVC** - MVC architecture pattern
-- 🔒 **آمن** - Secure with input validation
+## 📋 MVP Features
 
-## الهيكل المعماري - Project Structure
+### 1. AI Measurement Engine (Core)
+- Upload 4 photos (front, back, left, right) + height/weight
+- Computer vision model for accurate body measurements
+- Returns comprehensive measurements (chest, waist, shoulders, etc.)
+
+### 2. Design Studio (Limited)
+- Interactive garment design interface
+- **MVP Categories**: Men's Thobes and Men's Shirts only
+- Curated fabric catalog
+- Customization options (collar, sleeves, buttons)
+
+### 3. Virtual Try-On Room (Basic)
+- 3D avatar generation from measurements
+- Garment preview on avatar
+- 360-degree rotation capability
+
+### 4. User Accounts & Order History
+- User registration and authentication
+- Profile management
+- Order tracking (Current Orders & Past Orders)
+- Measurement storage
+
+### 5. Backend & Tailor Integration
+- RESTful API for all operations
+- Admin panel for order management
+- Tech pack generation (Order + Measurements + Design)
+- Integration with tailoring partner
+
+## 🏗️ Architecture
 
 ```
-Tiraz/
-├── app/
-│   ├── __init__.py           # Application factory
-│   ├── models/               # Database models
-│   │   ├── __init__.py
-│   │   └── item.py
-│   ├── controllers/          # Route controllers
-│   │   ├── __init__.py
-│   │   ├── main_controller.py
-│   │   └── item_controller.py
-│   ├── templates/            # HTML templates
-│   │   ├── base.html
-│   │   ├── index.html
-│   │   ├── about.html
-│   │   └── items/
-│   │       ├── list.html
-│   │       ├── create.html
-│   │       ├── view.html
-│   │       └── edit.html
-│   └── static/               # Static files
-│       ├── css/
-│       │   └── style.css
-│       └── js/
-│           └── main.js
-├── config/
-│   ├── __init__.py
-│   └── settings.py           # Configuration settings
-├── tests/                    # Test files
-├── run.py                    # Application entry point
-├── requirements.txt          # Python dependencies
-├── .env.example             # Example environment variables
-├── .gitignore               # Git ignore rules
-└── README.md                # This file
+Tiraz-MVP/
+├── mobile-app/          # React Native mobile application
+├── backend/             # Node.js/Express API server
+├── ai-models/           # Python AI/ML services
+├── docker/              # Docker configuration
+├── docs/                # Documentation
+├── docker-compose.yml   # Local development environment
+└── README.md           # This file
 ```
 
-## المتطلبات - Requirements
+## 🚀 Quick Start
 
-- Python 3.8 or higher
-- pip (Python package manager)
+### Prerequisites
 
-## التثبيت والتشغيل - Installation and Setup
+- Node.js >= 18
+- Python >= 3.8
+- Docker & Docker Compose
+- React Native development environment
+- MongoDB (included in Docker setup)
 
-### 1. استنساخ المستودع - Clone the Repository
+### Option 1: Docker (Recommended)
 
 ```bash
+# Clone the repository
 git clone https://github.com/OsmanMohamad249/Tiraz.git
 cd Tiraz
+
+# Start all services with Docker Compose
+docker-compose up -d
+
+# Check service status
+docker-compose ps
 ```
 
-### 2. إنشاء بيئة افتراضية - Create Virtual Environment
+**Services will be available at:**
+- Backend API: http://localhost:5000
+- AI Service: http://localhost:8000
+- MongoDB UI: http://localhost:8081 (admin/admin)
+- MongoDB: localhost:27017
+
+### Option 2: Manual Setup
+
+#### 1. Backend Setup
 
 ```bash
-# On Windows
-python -m venv venv
-venv\Scripts\activate
-
-# On macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. تثبيت المتطلبات - Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. إعداد المتغيرات البيئية - Configure Environment Variables
-
-```bash
-# Copy the example environment file
+cd backend
+npm install
 cp .env.example .env
-
-# Edit .env file with your settings
-# Optional: Change SECRET_KEY and DATABASE_URL
+# Edit .env with your configuration
+npm run dev
 ```
 
-### 5. تشغيل التطبيق - Run the Application
+#### 2. AI Models Setup
 
 ```bash
-python run.py
+cd ai-models
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python measurement_model/api.py
 ```
 
-التطبيق سيكون متاحاً على: The application will be available at: `http://localhost:5000`
-
-## الأمان والنشر - Security and Deployment
-
-⚠️ **ملاحظة أمنية مهمة / Important Security Note**:
-- التطبيق مُعد للتطوير والتعلم / This application is configured for development and learning
-- لا تستخدم `debug=True` في بيئة الإنتاج / Never use `debug=True` in production
-- للنشر في الإنتاج، استخدم خادم WSGI مثل Gunicorn أو uWSGI / For production deployment, use a WSGI server like Gunicorn or uWSGI
-- غيّر `SECRET_KEY` إلى قيمة سرية قوية / Change `SECRET_KEY` to a strong secret value
-- استخدم قاعدة بيانات إنتاجية مثل PostgreSQL أو MySQL / Use a production database like PostgreSQL or MySQL
-
-### نشر الإنتاج - Production Deployment
+#### 3. Mobile App Setup
 
 ```bash
-# Install production server
-pip install gunicorn
+cd mobile-app
+npm install
 
-# Run with gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app('production')"
+# For iOS (macOS only)
+cd ios && pod install && cd ..
+npm run ios
+
+# For Android
+npm run android
 ```
 
-## الاستخدام - Usage
+## 📱 Mobile App
 
-### الصفحة الرئيسية - Home Page
-قم بزيارة `http://localhost:5000` لعرض الصفحة الرئيسية
-Visit `http://localhost:5000` to see the home page
+The React Native mobile app provides the user-facing interface for all MVP features.
 
-### إدارة العناصر - Managing Items
+**Key Screens:**
+- Home Dashboard
+- AI Measurement Flow
+- Design Studio
+- Virtual Try-On
+- Order History
+- Profile & Settings
 
-1. **عرض العناصر / View Items**: انتقل إلى `/items` لعرض جميع العناصر
-2. **إضافة عنصر / Add Item**: انقر على "إضافة عنصر" لإنشاء عنصر جديد
-3. **عرض التفاصيل / View Details**: انقر على أي عنصر لعرض تفاصيله
-4. **تعديل / Edit**: استخدم زر التعديل لتحديث معلومات العنصر
-5. **حذف / Delete**: استخدم زر الحذف لإزالة العنصر
+See [mobile-app/README.md](mobile-app/README.md) for details.
 
-## التقنيات المستخدمة - Technologies Used
+## 🔧 Backend API
 
-### Backend
-- **Flask 3.0.0** - Python web framework
-- **Flask-SQLAlchemy 3.1.1** - Database ORM
-- **SQLite** - Database engine
-- **python-dotenv 1.0.0** - Environment variable management
+Node.js/Express backend providing RESTful APIs.
 
-### Frontend
-- **HTML5** - Markup language
-- **CSS3** - Styling
-- **JavaScript (ES6+)** - Client-side scripting
+**Main Endpoints:**
+- `/api/v1/users` - User authentication & profiles
+- `/api/v1/measurements` - AI measurement processing
+- `/api/v1/design` - Design studio operations
+- `/api/v1/orders` - Order management
 
-## المساهمة - Contributing
+See [backend/README.md](backend/README.md) for API documentation.
 
-المساهمات مرحب بها! يرجى اتباع الخطوات التالية:
+## 🤖 AI Models
+
+Python-based AI services for body measurement extraction.
+
+**Components:**
+- Measurement Model: Computer vision for body measurements
+- Virtual Try-On: 3D avatar generation (basic)
+
+See [ai-models/README.md](ai-models/README.md) for details.
+
+## 📚 Documentation
+
+- [API Documentation](docs/API.md)
+- [Setup Guide](docs/SETUP.md)
+- [Development Workflow](docs/DEVELOPMENT.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+
+## 🎨 Interactive Prototype
+
+A complete interactive HTML prototype (`tiraz-prototype-v4.html`) is included to visualize the full future ecosystem. This prototype demonstrates:
+
+- Complete user flows
+- Future features (AI Stylist, Subscriptions, B2B Portal)
+- Inspiration Gallery
+- Digital Wardrobe
+- Settings & Management
+
+Open `tiraz-prototype-v4.html` in a browser to explore the full vision.
+
+**Note:** This prototype is for visualization only. The actual MVP implementation is limited to core features listed above.
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd backend
+npm test
+
+# AI model tests
+cd ai-models
+pytest tests/
+
+# Mobile app tests
+cd mobile-app
+npm test
+```
+
+## 🐳 Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Rebuild containers
+docker-compose up -d --build
+
+# Reset everything
+docker-compose down -v
+```
+
+## 📊 GitHub Project Board
+
+To set up task tracking:
+
+1. Go to repository "Projects" tab
+2. Create new project: "Tiraz MVP Development"
+3. Add columns: Todo, In Progress, Testing, Done
+4. Create issues for MVP tasks:
+   - User Authentication
+   - AI Measurement Model
+   - Design Studio UI
+   - Virtual Try-On Integration
+   - Order Management
+   - Backend API Endpoints
+   - Mobile App Navigation
+   - Docker Setup
+
+## 🎯 Target Audience (MVP)
+
+Tech-savvy professionals (B2C) who value:
+- Convenience
+- Perfect fit
+- Personalization
+- Quality craftsmanship
+
+Primary focus: Men's traditional and modern wear (Thobes and Shirts)
+
+## 🛣️ Roadmap
+
+### Phase 1: MVP (Current)
+- ✅ Core measurement engine
+- ✅ Basic design studio
+- ✅ Simple virtual try-on
+- ✅ User accounts & orders
+- ✅ Single tailor integration
+
+### Phase 2: Enhanced Platform
+- [ ] AI Stylist recommendations
+- [ ] Expanded garment categories
+- [ ] Advanced 3D visualization
+- [ ] Multiple tailor network
+- [ ] Mobile payments integration
+
+### Phase 3: Full Ecosystem
+- [ ] Subscription plans
+- [ ] B2B/Corporate portal
+- [ ] Referral program
+- [ ] Inspiration gallery & social features
+- [ ] Global marketplace
+
+## 🤝 Contributing
+
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
@@ -165,17 +276,27 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## الترخيص - License
+## 📝 License
 
-هذا المشروع مرخص تحت رخصة MIT - انظر ملف LICENSE للتفاصيل
-This project is licensed under the MIT License - see the LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## التواصل - Contact
+## 👥 Team
 
-Osman Mohamad - [@OsmanMohamad249](https://github.com/OsmanMohamad249)
+**Tiraz Development Team**
+- Project Owner: Osman Mohamad - [@OsmanMohamad249](https://github.com/OsmanMohamad249)
 
-رابط المشروع: [https://github.com/OsmanMohamad249/Tiraz](https://github.com/OsmanMohamad249/Tiraz)
+## 🔗 Links
+
+- Repository: [https://github.com/OsmanMohamad249/Tiraz](https://github.com/OsmanMohamad249/Tiraz)
+- Issues: [https://github.com/OsmanMohamad249/Tiraz/issues](https://github.com/OsmanMohamad249/Tiraz/issues)
+- Project Board: [https://github.com/OsmanMohamad249/Tiraz/projects](https://github.com/OsmanMohamad249/Tiraz/projects)
+
+## 📧 Contact
+
+For questions or support, please open an issue or contact the team.
 
 ---
 
-صُنع بـ ❤️ في السودان | Made with ❤️ in Sudan
+صُنع بـ ❤️ | Made with ❤️
+
+**Note**: This is the MVP (Phase 1) implementation. Features marked for Phase 2 and Phase 3 are part of the long-term vision and are not included in this release.

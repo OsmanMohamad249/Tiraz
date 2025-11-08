@@ -49,3 +49,19 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Node modules (for backend and mobile-app)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Mobile app specific
+mobile-app/android/app/build/
+mobile-app/ios/Pods/
+mobile-app/.expo/
+
+# Docker
+.docker/
+
+# Uploads
+uploads/

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tiraz-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/tiraz
+      - JWT_SECRET=dev-secret-change-in-production
+      - AI_SERVICE_URL=http://ai-service:8000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+    networks:
+      - tiraz-network
+    restart: unless-stopped
+
+  # AI Measurement Service
+  ai-service:
+    build:
+      context: ./ai-models
+      dockerfile: Dockerfile
+    container_name: tiraz-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DEBUG=False
+    volumes:
+      - ./ai-models:/app
+      - ai-data:/app/data
+    networks:
+      - tiraz-network
+    restart: unless-stopped
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: tiraz-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=tiraz
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - tiraz-network
+    restart: unless-stopped
+
+  # Mongo Express (Database UI)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: tiraz-mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    depends_on:
+      - mongodb
+    networks:
+      - tiraz-network
+    restart: unless-stopped
+
+networks:
+  tiraz-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
+  ai-data:
+    driver: local

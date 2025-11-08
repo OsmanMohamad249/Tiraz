@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiraz - طِرَاز | AI Tailoring Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: ltr;
+        }
+
+        .app-container {
+            max-width: 414px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 90vh;
+        }
+
+        .status-bar {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 70px;
+            font-size: 14px;
+        }
+
+        .nav-back:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .menu-card .title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feature-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .feature-item .feature-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .feature-item .feature-desc {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .upload-box {
+            background: white;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .upload-box.uploaded {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .upload-box .icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .measurements-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .measurement-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .measurement-card .label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .measurement-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .measurement-card .unit {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .fabric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .fabric-card {
+            border: 3px solid transparent;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .fabric-card:hover {
+            transform: scale(1.05);
+        }
+
+        .fabric-card.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .fabric-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .fabric-card .name {
+            padding: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 11px;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .viewer-3d {
+            background: linear-gradient(180deg, #e9ecef 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-placeholder {
+            width: 200px;
+            height: 350px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 100px 100px 20px 20px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .rotation-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .rotation-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            height: 200px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px 10px 10px;
+            color: white;
+        }
+
+        .gallery-item .title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .gallery-item .likes {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #6c757d;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .order-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .order-status.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .order-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-details {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .settings-list {
+            list-style: none;
+        }
+
+        .settings-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .settings-item:hover {
+            background: #e9ecef;
+        }
+
+        .settings-item .icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .settings-item .info {
+            flex: 1;
+        }
+
+        .settings-item .title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 3px;
+        }
+
+        .settings-item .desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .settings-item .arrow {
+            color: #6c757d;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 414px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6c757d;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item .label {
+            font-size: 11px;
+        }
+
+        .notification {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            margin: 20px 0 15px;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="status-bar">
+            <span>9:41 AM</span>
+            <span>📶 🔋 100%</span>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="home" class="screen active">
+            <div class="header">
+                <h1>طِرَاز Tiraz</h1>
+                <div class="subtitle">AI-Powered Custom Tailoring</div>
+            </div>
+            <div class="content">
+                <div class="info-box">
+                    👋 Welcome! This is a visual prototype showing the complete Tiraz ecosystem vision.
+                </div>
+                
+                <div class="section-title">Core Features</div>
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="showScreen('measurement')">
+                        <div class="icon">📐</div>
+                        <div class="title">AI Measurement</div>
+                    </div>
+                    <div class="menu-card" onclick="showScreen('design-studio')">
+                        <div class="icon">✂️</div>
+                        <div class="title">Design Studio</div>
+                    </div>
+                    <div class="menu-card" onclick="showScreen('virtual-tryon')">
+                        <div class="icon">👔</div>
+                        <div class="title">Virtual Try-On</div>
+                    </div>
+                    <div class="menu-card" onclick="showScreen('gallery')">
+                        <div class="icon">🎨</div>
+                        <div class="title">Inspiration</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Future Features</div>
+                <ul class="feature-list">
+                    <li class="feature-item" onclick="showNotification('AI Stylist')">
+                        <div class="feature-title">🤖 AI Stylist</div>
+                        <div class="feature-desc">Personalized style recommendations</div>
+                    </li>
+                    <li class="feature-item" onclick="showNotification('Subscription')">
+                        <div class="feature-title">💎 Subscription Plans</div>
+                        <div class="feature-desc">Premium membership benefits</div>
+                    </li>
+                    <li class="feature-item" onclick="showNotification('B2B Portal')">
+                        <div class="feature-title">🏢 B2B / Corporate</div>
+                        <div class="feature-desc">Bulk orders for businesses</div>
+                    </li>
+                    <li class="feature-item" onclick="showNotification('Referral')">
+                        <div class="feature-title">🎁 Referral Program</div>
+                        <div class="feature-desc">Earn rewards by referring friends</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- AI Measurement Screen -->
+        <div id="measurement" class="screen">
+            <div class="header">
+                <button class="nav-back" onclick="showScreen('home')">← Back</button>
+                <h1>AI Measurement</h1>
+                <div class="subtitle">Upload 4 photos for accurate measurements</div>
+            </div>
+            <div class="content">
+                <div id="measurement-notification" class="notification"></div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="upload-progress" style="width: 0%"></div>
+                </div>
+
+                <div class="upload-section">
+                    <h3>Upload Photos</h3>
+                    <div class="upload-grid">
+                        <div class="upload-box" id="upload-front" onclick="simulateUpload('front')">
+                            <div class="icon">📸</div>
+                            <div>Front View</div>
+                        </div>
+                        <div class="upload-box" id="upload-back" onclick="simulateUpload('back')">
+                            <div class="icon">📸</div>
+                            <div>Back View</div>
+                        </div>
+                        <div class="upload-box" id="upload-left" onclick="simulateUpload('left')">
+                            <div class="icon">📸</div>
+                            <div>Left Side</div>
+                        </div>
+                        <div class="upload-box" id="upload-right" onclick="simulateUpload('right')">
+                            <div class="icon">📸</div>
+                            <div>Right Side</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="height" placeholder="e.g., 175">
+                </div>
+
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="e.g., 70">
+                </div>
+
+                <button class="btn" id="process-btn" onclick="processMeasurements()" disabled>
+                    Process Measurements
+                </button>
+
+                <div id="results-section" style="display: none;">
+                    <div class="section-title">Your Measurements</div>
+                    <div class="measurements-grid">
+                        <div class="measurement-card">
+                            <div class="label">Chest</div>
+                            <div class="value">98</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Waist</div>
+                            <div class="value">82</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Shoulders</div>
+                            <div class="value">44</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Arm Length</div>
+                            <div class="value">62</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Neck</div>
+                            <div class="value">38</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Hip</div>
+                            <div class="value">96</div>
+                            <div class="unit">cm</div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="showScreen('design-studio')">Continue to Design Studio →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design Studio Screen -->
+        <div id="design-studio" class="screen">
+            <div class="header">
+                <button class="nav-back" onclick="showScreen('home')">← Back</button>
+                <h1>Design Studio</h1>
+                <div class="subtitle">Create your perfect garment</div>
+            </div>
+            <div class="content">
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="category" onchange="updateFabrics()">
+                        <option value="">Select Category</option>
+                        <option value="thobes">Men's Thobes</option>
+                        <option value="shirts">Men's Shirts</option>
+                    </select>
+                </div>
+
+                <div id="fabric-section" style="display: none;">
+                    <div class="section-title">Choose Fabric</div>
+                    <div class="fabric-grid" id="fabric-grid"></div>
+                </div>
+
+                <div id="customization-section" style="display: none;">
+                    <div class="section-title">Customization</div>
+                    
+                    <div class="input-group">
+                        <label>Collar Style</label>
+                        <select>
+                            <option>Classic</option>
+                            <option>Modern</option>
+                            <option>Mandarin</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Sleeve Length</label>
+                        <select>
+                            <option>Full Sleeve</option>
+                            <option>3/4 Sleeve</option>
+                            <option>Short Sleeve</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Button Style</label>
+                        <select>
+                            <option>Standard</option>
+                            <option>Hidden</option>
+                            <option>Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Special Instructions</label>
+                        <input type="text" placeholder="Any special requests...">
+                    </div>
+
+                    <button class="btn" onclick="showScreen('virtual-tryon')">Preview in 3D →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Virtual Try-On Screen -->
+        <div id="virtual-tryon" class="screen">
+            <div class="header">
+                <button class="nav-back" onclick="showScreen('design-studio')">← Back</button>
+                <h1>Virtual Try-On</h1>
+                <div class="subtitle">See how it looks on you</div>
+            </div>
+            <div class="content">
+                <div class="viewer-3d">
+                    <div class="avatar-placeholder" id="avatar"></div>
+                    <div class="rotation-controls">
+                        <button class="rotation-btn" onclick="rotateAvatar('left')">←</button>
+                        <button class="rotation-btn" onclick="rotateAvatar('reset')">⟲</button>
+                        <button class="rotation-btn" onclick="rotateAvatar('right')">→</button>
+                    </div>
+                </div>
+
+                <div class="section-title">Design Summary</div>
+                <div class="order-card">
+                    <div class="order-details">
+                        <p><strong>Category:</strong> Men's Thobes</p>
+                        <p><strong>Fabric:</strong> Premium Cotton</p>
+                        <p><strong>Color:</strong> Navy Blue</p>
+                        <p><strong>Collar:</strong> Classic</p>
+                        <p><strong>Sleeves:</strong> Full Sleeve</p>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="placeOrder()">Place Order - $120</button>
+                <button class="btn btn-secondary" onclick="showScreen('home')">Save for Later</button>
+            </div>
+        </div>
+
+        <!-- Inspiration Gallery Screen -->
+        <div id="gallery" class="screen">
+            <div class="header">
+                <button class="nav-back" onclick="showScreen('home')">← Back</button>
+                <h1>Inspiration Gallery</h1>
+                <div class="subtitle">Discover trending styles</div>
+            </div>
+            <div class="content">
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Modern Thobe</div>
+                            <div class="likes">❤️ 1.2k likes</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Classic Shirt</div>
+                            <div class="likes">❤️ 890 likes</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Summer Style</div>
+                            <div class="likes">❤️ 2.1k likes</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Elegant Design</div>
+                            <div class="likes">❤️ 1.5k likes</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Bold Pattern</div>
+                            <div class="likes">❤️ 3.2k likes</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); height: 100%;"></div>
+                        <div class="overlay">
+                            <div class="title">Night Wear</div>
+                            <div class="likes">❤️ 980 likes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Wardrobe Screen -->
+        <div id="wardrobe" class="screen">
+            <div class="header">
+                <h1>Digital Wardrobe</h1>
+                <div class="subtitle">Your measurements & orders</div>
+            </div>
+            <div class="content">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('measurements')">My Measurements</button>
+                    <button class="tab" onclick="switchTab('orders')">My Orders</button>
+                </div>
+
+                <div id="tab-measurements" class="tab-content">
+                    <div class="measurements-grid">
+                        <div class="measurement-card">
+                            <div class="label">Chest</div>
+                            <div class="value">98</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Waist</div>
+                            <div class="value">82</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Shoulders</div>
+                            <div class="value">44</div>
+                            <div class="unit">cm</div>
+                        </div>
+                        <div class="measurement-card">
+                            <div class="label">Arm Length</div>
+                            <div class="value">62</div>
+                            <div class="unit">cm</div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="showScreen('measurement')">Update Measurements</button>
+                </div>
+
+                <div id="tab-orders" class="tab-content" style="display: none;">
+                    <div class="section-title">Current Orders</div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Order #12345</span>
+                            <span class="order-status in-progress">In Progress</span>
+                        </div>
+                        <div class="order-details">
+                            <p>Navy Blue Thobe</p>
+                            <p>Expected delivery: 5-7 days</p>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Past Orders</div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Order #12344</span>
+                            <span class="order-status completed">Completed</span>
+                        </div>
+                        <div class="order-details">
+                            <p>White Classic Shirt</p>
+                            <p>Delivered: Oct 15, 2024</p>
+                        </div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Order #12343</span>
+                            <span class="order-status completed">Completed</span>
+                        </div>
+                        <div class="order-details">
+                            <p>Grey Modern Thobe</p>
+                            <p>Delivered: Sep 28, 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings" class="screen">
+            <div class="header">
+                <h1>Settings</h1>
+                <div class="subtitle">Manage your account</div>
+            </div>
+            <div class="content">
+                <ul class="settings-list">
+                    <li class="settings-item">
+                        <span class="icon">👤</span>
+                        <div class="info">
+                            <div class="title">Profile</div>
+                            <div class="desc">Edit your personal information</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item">
+                        <span class="icon">🔔</span>
+                        <div class="info">
+                            <div class="title">Notifications</div>
+                            <div class="desc">Manage notification preferences</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item" onclick="showNotification('B2B Portal')">
+                        <span class="icon">🏢</span>
+                        <div class="info">
+                            <div class="title">B2B / Corporate Portal</div>
+                            <div class="desc">Business accounts & bulk orders</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item" onclick="showNotification('Referral')">
+                        <span class="icon">🎁</span>
+                        <div class="info">
+                            <div class="title">Referral Program</div>
+                            <div class="desc">Invite friends, earn rewards</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item">
+                        <span class="icon">💳</span>
+                        <div class="info">
+                            <div class="title">Payment Methods</div>
+                            <div class="desc">Manage saved payment options</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item">
+                        <span class="icon">📍</span>
+                        <div class="info">
+                            <div class="title">Addresses</div>
+                            <div class="desc">Delivery & billing addresses</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item">
+                        <span class="icon">❓</span>
+                        <div class="info">
+                            <div class="title">Help & Support</div>
+                            <div class="desc">FAQs, contact us</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                    <li class="settings-item">
+                        <span class="icon">ℹ️</span>
+                        <div class="info">
+                            <div class="title">About Tiraz</div>
+                            <div class="desc">Version 1.0.0 (MVP)</div>
+                        </div>
+                        <span class="arrow">›</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showScreen('home')">
+                <div class="icon">🏠</div>
+                <div class="label">Home</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('gallery')">
+                <div class="icon">🎨</div>
+                <div class="label">Inspire</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('wardrobe')">
+                <div class="icon">👔</div>
+                <div class="label">Wardrobe</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('settings')">
+                <div class="icon">⚙️</div>
+                <div class="label">Settings</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let uploadedPhotos = {
+            front: false,
+            back: false,
+            left: false,
+            right: false
+        };
+        let currentRotation = 0;
+
+        // Screen navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update nav bar
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Scroll to top
+            document.querySelector('.app-container').scrollTop = 0;
+        }
+
+        // Upload simulation
+        function simulateUpload(view) {
+            const uploadBox = document.getElementById(`upload-${view}`);
+            uploadBox.classList.add('uploaded');
+            uploadBox.innerHTML = '<div class="icon">✅</div><div>' + view.charAt(0).toUpperCase() + view.slice(1) + ' View</div>';
+            
+            uploadedPhotos[view] = true;
+            updateProgress();
+            checkAllUploaded();
+        }
+
+        function updateProgress() {
+            const uploaded = Object.values(uploadedPhotos).filter(v => v).length;
+            const progress = (uploaded / 4) * 100;
+            document.getElementById('upload-progress').style.width = progress + '%';
+        }
+
+        function checkAllUploaded() {
+            const allUploaded = Object.values(uploadedPhotos).every(v => v);
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            
+            const processBtn = document.getElementById('process-btn');
+            processBtn.disabled = !(allUploaded && height && weight);
+        }
+
+        // Add event listeners for height and weight
+        document.addEventListener('DOMContentLoaded', function() {
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            
+            if (heightInput) heightInput.addEventListener('input', checkAllUploaded);
+            if (weightInput) weightInput.addEventListener('input', checkAllUploaded);
+        });
+
+        // Process measurements
+        function processMeasurements() {
+            const notification = document.getElementById('measurement-notification');
+            notification.textContent = '🔄 Processing your measurements with AI...';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.textContent = '✅ Measurements calculated successfully!';
+                document.getElementById('results-section').style.display = 'block';
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }, 2000);
+        }
+
+        // Design studio functions
+        function updateFabrics() {
+            const category = document.getElementById('category').value;
+            const fabricSection = document.getElementById('fabric-section');
+            const customSection = document.getElementById('customization-section');
+            const fabricGrid = document.getElementById('fabric-grid');
+            
+            if (category) {
+                fabricSection.style.display = 'block';
+                
+                // Sample fabrics
+                const fabrics = [
+                    { name: 'Premium Cotton', color: '#E8F4F8' },
+                    { name: 'Linen Blend', color: '#F5E6D3' },
+                    { name: 'Silk Touch', color: '#FFF8DC' },
+                    { name: 'Twill Fabric', color: '#E0E0E0' },
+                    { name: 'Oxford Cloth', color: '#D0E0F0' },
+                    { name: 'Chambray', color: '#C0D0E0' }
+                ];
+                
+                fabricGrid.innerHTML = fabrics.map((fabric, index) => `
+                    <div class="fabric-card" onclick="selectFabric(${index})">
+                        <div style="background: ${fabric.color}; width: 100%; height: 100px;"></div>
+                        <div class="name">${fabric.name}</div>
+                    </div>
+                `).join('');
+            } else {
+                fabricSection.style.display = 'none';
+                customSection.style.display = 'none';
+            }
+        }
+
+        function selectFabric(index) {
+            document.querySelectorAll('.fabric-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelectorAll('.fabric-card')[index].classList.add('selected');
+            document.getElementById('customization-section').style.display = 'block';
+        }
+
+        // 3D viewer functions
+        function rotateAvatar(direction) {
+            const avatar = document.getElementById('avatar');
+            if (direction === 'left') {
+                currentRotation -= 90;
+            } else if (direction === 'right') {
+                currentRotation += 90;
+            } else {
+                currentRotation = 0;
+            }
+            avatar.style.transform = `rotate(${currentRotation}deg)`;
+        }
+
+        // Order placement
+        function placeOrder() {
+            alert('🎉 Order placed successfully!\n\nYour custom garment is being prepared by our partner tailor.\n\nOrder ID: #' + Math.floor(Math.random() * 90000 + 10000) + '\nExpected delivery: 5-7 business days');
+            showScreen('home');
+        }
+
+        // Wardrobe tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.getElementById('tab-measurements').style.display = tab === 'measurements' ? 'block' : 'none';
+            document.getElementById('tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+        }
+
+        // Notifications
+        function showNotification(feature) {
+            alert('🚀 ' + feature + '\n\nThis feature is part of Phase 2-3 of the Tiraz platform.\n\nComing soon in future updates!');
+        }
+
+        // Initialize
+        console.log('Tiraz Prototype v4 Loaded');
+        console.log('This is a visual simulation of the complete Tiraz ecosystem');
+    </script>
+</body>
+</html>
