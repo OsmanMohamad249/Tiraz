@@ -108,6 +108,31 @@ python run.py
 
 التطبيق سيكون متاحاً على: The application will be available at: `http://localhost:5000`
 
+### 6. (اختياري) التشغيل التجريبي - (Optional) Trial Run
+
+لتجربة التطبيق بسرعة مع بيانات تجريبية، يمكنك استخدام أمر التشغيل التجريبي لملء قاعدة البيانات بعناصر نموذجية:
+
+To quickly demo the application with sample data, you can use the trial run command to populate the database with sample items:
+
+```bash
+# Populate database with 10 sample items
+flask trial-run
+
+# Or clear existing data and add fresh sample items
+flask trial-run --clear
+```
+
+هذا الأمر سيضيف 10 عناصر تجريبية متنوعة تشمل:
+This command will add 10 diverse sample items including:
+- ثياب تقليدية وعصرية / Traditional and modern thobes
+- قمصان بأنماط مختلفة / Shirts with different styles
+- محتوى ثنائي اللغة (عربي/إنجليزي) / Bilingual content (Arabic/English)
+- أنماط متعددة: تقليدي، عصري، كلاسيكي، كاجوال، فاخر / Multiple styles: Traditional, Modern, Classic, Casual, Luxury
+
+**ملاحظة**: الأمر آمن للتشغيل المتكرر - لن يضيف بيانات مكررة إلا إذا استخدمت علامة `--clear`
+
+**Note**: The command is safe to run multiple times - it won't add duplicate data unless you use the `--clear` flag
+
 ## الأمان والنشر - Security and Deployment
 
 ⚠️ **ملاحظة أمنية مهمة / Important Security Note**:

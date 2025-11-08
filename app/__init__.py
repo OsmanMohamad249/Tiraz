@@ -28,6 +28,10 @@ def create_app(config_name='development'):
     app.register_blueprint(main_controller.bp)
     app.register_blueprint(item_controller.bp)
     
+    # Register CLI commands
+    from app import commands
+    commands.register_commands(app)
+    
     # Create database tables
     with app.app_context():
         db.create_all()
