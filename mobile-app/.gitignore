@@ -1,0 +1,4 @@
+# Build & dependency caches
+/build
+/.dart_tool/
+/.packages
