@@ -10,9 +10,13 @@ The main branch is 100% clean, healthy, and ready for Sprint 1 development to be
 The one and only approved tech stack for this project is:
 
 Backend: FastAPI (Python)
+
 Mobile App: Flutter (Dart)
+
 Database: PostgreSQL
+
 Infrastructure: Docker (via docker-compose)
+
 CI/Quality: GitHub Actions (using ruff & black)
 
 (Note: All legacy use of Node.js, Express, React Native, Flask, or MongoDB has been permanently removed from this project.)
@@ -24,6 +28,7 @@ This project is fully containerized with Docker Compose.
 Prerequisites
 
 Docker
+
 Docker Compose
 
 Running (for Local Development)
@@ -39,16 +44,22 @@ docker-compose up --build -d
 # 3. (Optional) Check that services are running
 docker-compose ps
 
+
+
 Accessing Services
 
 Backend (FastAPI): http://localhost:8000
+
 Health Check Endpoint: http://localhost:8000/health
+
 Database (PostgreSQL): Accessible on port 5432 (for tools like DBeaver)
 
 Stopping Services
 
 # Stop all services
 docker-compose down
+
+
 
 📁 Project Structure
 
@@ -69,18 +80,24 @@ Tiraz/
 ├── BOILERPLATE_SETUP_COMPLETE.md # (Sprint 0 Completion Doc)
 └── README.md               # (This file)
 
+
+
 🧪 Testing & Quality (CI)
 
 We use GitHub Actions to run automated CI checks on every PR targeting main:
 
 ruff: For Python code error linting.
+
 black: To ensure consistent code formatting.
 
 🤝 Contributing
 
 Create a new feature branch (git checkout -b feat/my-new-feature)
+
 Make your changes.
+
 Push your changes (git push ...)
+
 Open a Pull Request for review.
 
 📄 License
