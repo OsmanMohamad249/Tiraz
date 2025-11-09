@@ -16,6 +16,13 @@ sys.path.insert(0, str(backend_dir))
 from core.config import settings
 from core.database import Base
 
+# Import all models so Alembic can detect them
+from models.user import User
+from models.measurement import Measurement
+from models.category import Category
+from models.fabric import Fabric
+from models.design import Design
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
