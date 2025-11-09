@@ -68,9 +68,7 @@ class Settings(BaseSettings):
         """Validate ENVIRONMENT is one of the allowed values"""
         allowed = ["development", "staging", "production"]
         if v.lower() not in allowed:
-            raise ValueError(
-                f"ENVIRONMENT must be one of {allowed}, got: {v}"
-            )
+            raise ValueError(f"ENVIRONMENT must be one of {allowed}, got: {v}")
         return v.lower()
 
     @validator("SECRET_KEY")
