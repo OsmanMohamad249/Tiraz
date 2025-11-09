@@ -5,7 +5,7 @@ Pydantic schemas for User operations.
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from models.roles import UserRole
 
@@ -14,7 +14,7 @@ class UserRegister(BaseModel):
     """Schema for user registration."""
 
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8, max_length=72)
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     role: UserRole = UserRole.CUSTOMER

@@ -145,3 +145,80 @@ def test_get_current_user_invalid_token():
     )
 
     assert response.status_code == 401
+
+
+def test_register_password_too_short():
+    """Test registration with password shorter than 8 characters."""
+    import time
+
+    email = f"short_pwd_{int(time.time())}@example.com"
+
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": email,
+            "password": "short",  # Only 5 characters
+            "first_name": "Test",
+            "last_name": "User",
+        },
+    )
+
+    assert response.status_code == 422
+    error_detail = response.json()["detail"]
+    assert any("password" in str(error).lower() for error in error_detail)
+
+
+def test_register_password_too_long():
+    """Test registration with password longer than 72 characters."""
+    import time
+
+    email = f"long_pwd_{int(time.time())}@example.com"
+    # Create a password longer than 72 characters
+    long_password = "a" * 73
+
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": email,
+            "password": long_password,
+            "first_name": "Test",
+            "last_name": "User",
+        },
+    )
+
+    assert response.status_code == 422
+    error_detail = response.json()["detail"]
+    assert any("password" in str(error).lower() for error in error_detail)
+
+
+def test_register_password_valid_lengths():
+    """Test registration with valid password lengths (8 and 72 characters)."""
+    import time
+
+    # Test minimum length (8 characters)
+    email_min = f"pwd_min_{int(time.time())}@example.com"
+    response_min = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": email_min,
+            "password": "12345678",  # Exactly 8 characters
+            "first_name": "Test",
+            "last_name": "User",
+        },
+    )
+
+    assert response_min.status_code in [201, 400]  # 201 success, 400 duplicate email
+
+    # Test maximum length (72 characters)
+    email_max = f"pwd_max_{int(time.time())}@example.com"
+    response_max = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": email_max,
+            "password": "a" * 72,  # Exactly 72 characters
+            "first_name": "Test",
+            "last_name": "User",
+        },
+    )
+
+    assert response_max.status_code in [201, 400]  # 201 success, 400 duplicate email
