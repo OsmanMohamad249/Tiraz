@@ -16,7 +16,6 @@ services:
       - upload-data:/app/uploads
     depends_on:
       - postgres
-      - ai-models
 
   ai-models:
     build:

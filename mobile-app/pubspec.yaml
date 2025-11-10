@@ -10,17 +10,17 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  http: ^1.1.0                    # API calls
-  provider: ^6.1.1                # State management (alternative to Riverpod)
-  flutter_riverpod: ^2.4.9        # State management (Riverpod)
-  shared_preferences: ^2.2.2      # Local storage
-  cached_network_image: ^3.3.0    # Image caching
-  flutter_secure_storage: ^9.0.0  # Secure token storage
-  dartz: ^0.10.1                  # Functional programming
-  intl: ^0.18.1                   # Internationalization
+  http: ^0.13.5                    # API calls (compatible with Flutter 2.19)
+  provider: ^6.0.5                 # State management (alternative to Riverpod)
+  flutter_riverpod: ^2.3.6        # State management (Riverpod, compatible with 2.19)
+  shared_preferences: ^2.1.1       # Local storage (compatible with 2.19)
+  cached_network_image: ^3.2.3     # Image caching (compatible with 2.19)
+  flutter_secure_storage: ^8.0.0   # Secure token storage (compatible with 2.19)
+  dartz: ^0.10.1                   # Functional programming
+  intl: ^0.18.1                    # Internationalization
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  build_runner: ^2.4.0
+  build_runner: ^2.3.3  # Compatible with Flutter 2.19
