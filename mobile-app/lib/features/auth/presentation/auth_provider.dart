@@ -16,12 +16,12 @@ final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((r
 class AuthStateNotifier extends StateNotifier<AuthState> {
   final AuthService authService;
   
-  AuthStateNotifier(this.authService) : super(const AuthState.initial());
+  AuthStateNotifier(this.authService) : super(const AuthStateInitial());
   
   // Check authentication status
   Future<void> checkAuth() async {
     // Set loading state
-    state = const AuthState.loading();
+    state = const AuthStateLoading();
     
     try {
       final isLoggedIn = await authService.isLoggedIn();
@@ -30,21 +30,21 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         final result = await authService.getCurrentUser();
         if (result['success']) {
           final user = User.fromJson(result['data']);
-          state = AuthState.authenticated(user: user);
+          state = AuthStateAuthenticated(user: user);
         } else {
-          state = const AuthState.unauthenticated();
+          state = const AuthStateUnauthenticated();
         }
       } else {
-        state = const AuthState.unauthenticated();
+        state = const AuthStateUnauthenticated();
       }
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthStateError(message: e.toString());
     }
   }
   
   // Login
   Future<bool> login(String email, String password) async {
-    state = const AuthState.loading();
+    state = const AuthStateLoading();
     
     try {
       final result = await authService.login(
@@ -57,15 +57,15 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         final userResult = await authService.getCurrentUser();
         if (userResult['success']) {
           final user = User.fromJson(userResult['data']);
-          state = AuthState.authenticated(user: user);
+          state = AuthStateAuthenticated(user: user);
           return true;
         }
       }
       
-      state = AuthState.error(message: result['error'] ?? 'Login failed');
+      state = AuthStateError(message: result['error'] ?? 'Login failed');
       return false;
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthStateError(message: e.toString());
       return false;
     }
   }
@@ -77,7 +77,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     String? firstName,
     String? lastName,
   }) async {
-    state = const AuthState.loading();
+    state = const AuthStateLoading();
     
     try {
       final result = await authService.register(
@@ -88,14 +88,14 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       );
       
       if (result['success']) {
-        state = const AuthState.unauthenticated();
+        state = const AuthStateUnauthenticated();
         return true;
       } else {
-        state = AuthState.error(message: result['error'] ?? 'Registration failed');
+        state = AuthStateError(message: result['error'] ?? 'Registration failed');
         return false;
       }
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthStateError(message: e.toString());
       return false;
     }
   }
@@ -103,6 +103,6 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   // Logout
   Future<void> logout() async {
     await authService.logout();
-    state = const AuthState.unauthenticated();
+    state = const AuthStateUnauthenticated();
   }
 }
