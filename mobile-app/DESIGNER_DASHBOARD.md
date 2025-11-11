@@ -1,6 +1,6 @@
 # Designer Dashboard Implementation
 
-This document describes the Flutter UI implementation for the Designer's Toolkit feature in the Tiraz mobile app.
+This document describes the Flutter UI implementation for the Designer's Toolkit feature in the Taarez mobile app.
 
 ## Overview
 

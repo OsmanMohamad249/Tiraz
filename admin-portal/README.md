@@ -1,7 +1,7 @@
-# Tiraz Admin Portal (Next.js)
+# Taarez Admin Portal (Next.js)
 
 ## Overview
-This is the Next.js admin portal for Tiraz - an AI tailoring platform. The admin portal is designed for administrators and management to oversee and manage the platform.
+This is the Next.js admin portal for Taarez - an AI tailoring platform. The admin portal is designed for administrators and management to oversee and manage the platform.
 
 ## Project Structure
 ```

@@ -1,4 +1,4 @@
-# تطبيق طراز - Tiraz Application
+# تطبيق طراز - Taarez Application
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
@@ -8,7 +8,7 @@
 
 **طراز** هو تطبيق ويب نموذجي متكامل مبني باستخدام Flask وPython. يوفر التطبيق نظاماً لإدارة العناصر مع إمكانية تصنيفها حسب الأنماط والتصاميم.
 
-**Tiraz** is a complete model web application built with Flask and Python. It provides a comprehensive system for managing items with the ability to categorize them by styles and designs.
+**Taarez** is a complete model web application built with Flask and Python. It provides a comprehensive system for managing items with the ability to categorize them by styles and designs.
 
 ## المميزات - Features
 
@@ -23,7 +23,7 @@
 ## الهيكل المعماري - Project Structure
 
 ```
-Tiraz/
+Taarez/
 ├── app/
 │   ├── __init__.py           # Application factory
 │   ├── models/               # Database models
@@ -68,8 +68,8 @@ Tiraz/
 ### 1. استنساخ المستودع - Clone the Repository
 
 ```bash
-git clone https://github.com/OsmanMohamad249/Tiraz.git
-cd Tiraz
+git clone https://github.com/OsmanMohamad249/Taarez.git
+cd Taarez
 ```
 
 ### 2. إنشاء بيئة افتراضية - Create Virtual Environment
@@ -199,7 +199,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Osman Mohamad - [@OsmanMohamad249](https://github.com/OsmanMohamad249)
 
-رابط المشروع: [https://github.com/OsmanMohamad249/Tiraz](https://github.com/OsmanMohamad249/Tiraz)
+رابط المشروع: [https://github.com/OsmanMohamad249/Taarez](https://github.com/OsmanMohamad249/Taarez)
 
 ---
 

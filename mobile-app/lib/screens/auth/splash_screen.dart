@@ -68,7 +68,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Tiraz',
+              'Taarez',
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,

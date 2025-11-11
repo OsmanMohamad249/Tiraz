@@ -1,12 +1,12 @@
 """
-Database models for Tiraz application
+Database models for Taarez application
 """
 from datetime import datetime
 from app import db
 
 
 class Item(db.Model):
-    """Item model representing a styled item in the Tiraz application"""
+    """Item model representing a styled item in the Taarez application"""
     __tablename__ = 'items'
     
     id = db.Column(db.Integer, primary_key=True)

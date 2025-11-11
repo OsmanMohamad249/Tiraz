@@ -1,5 +1,5 @@
 ```markdown
-# BOILERPLATE_SETUP_COMPLETE - Tiraz
+# BOILERPLATE_SETUP_COMPLETE - Taarez
 
 هذا المستند يؤكد أن إعداد الـ boilerplate للمشروع تمّ بنجاح.
 المحتوى في هذا الفرع يعكس بنية أولية صالحة للتطوير باستخدام:

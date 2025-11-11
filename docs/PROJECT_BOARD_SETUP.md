@@ -1,14 +1,14 @@
 # GitHub Project Board Setup Guide
 
-This guide helps you set up a GitHub Project board for tracking Tiraz MVP development tasks.
+This guide helps you set up a GitHub Project board for tracking Taarez MVP development tasks.
 
 ## Step 1: Create Project Board
 
-1. Go to your repository: https://github.com/OsmanMohamad249/Tiraz
+1. Go to your repository: https://github.com/OsmanMohamad249/Taarez
 2. Click on the "Projects" tab
 3. Click "New project"
 4. Select "Board" template
-5. Name it: "Tiraz MVP Development"
+5. Name it: "Taarez MVP Development"
 6. Click "Create"
 
 ## Step 2: Set Up Columns

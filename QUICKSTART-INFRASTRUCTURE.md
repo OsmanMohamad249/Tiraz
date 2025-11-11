@@ -1,4 +1,4 @@
-# 🎯 Tiraz Infrastructure - Quick Start
+# 🎯 Taarez Infrastructure - Quick Start
 
 ## Status: ✅ ALL SYSTEMS OPERATIONAL
 
@@ -115,7 +115,7 @@ docker compose logs backend
 ### Database issues?
 ```bash
 docker compose ps postgres
-docker compose exec postgres psql -U tiraz -d tiraz_db
+docker compose exec postgres psql -U taarez -d taarez_db
 ```
 
 ### Flutter issues?
@@ -242,7 +242,7 @@ Expected output:
 ## 📝 Project Structure
 
 ```
-Tiraz/
+Taarez/
 ├── backend/              # FastAPI backend
 │   ├── Dockerfile        # ✅ Fixed: Python 3.11
 │   ├── entrypoint.sh     # ✅ New: Auto-migrations

@@ -1,10 +1,10 @@
-# Tiraz Infrastructure - Verification Report
+# Taarez Infrastructure - Verification Report
 
 ## Date: 2024-11-10
 
 ## Executive Summary
 
-All critical infrastructure issues have been successfully resolved. The Tiraz backend, database, and mobile app dependencies are now properly configured and working.
+All critical infrastructure issues have been successfully resolved. The Taarez backend, database, and mobile app dependencies are now properly configured and working.
 
 ---
 
@@ -22,7 +22,7 @@ All critical infrastructure issues have been successfully resolved. The Tiraz ba
 **Verification**:
 ```bash
 docker compose ps
-# Shows: tiraz-backend-1 running on 0.0.0.0:8000->8000/tcp
+# Shows: taarez-backend-1 running on 0.0.0.0:8000->8000/tcp
 
 curl http://localhost:8000/health
 # Returns: {"status":"ok","service":"tirez-backend"}
@@ -102,8 +102,8 @@ docker compose logs backend | grep -A 5 "Running database migrations"
 - **Database**: PostgreSQL 15
 - **Host**: postgres (Docker network)
 - **Port**: 5432 (mapped to localhost:5432)
-- **User**: tiraz
-- **Database**: tiraz_db
+- **User**: taarez
+- **Database**: taarez_db
 - **Status**: Accepting connections
 - **Migrations**: All applied
 
@@ -171,7 +171,7 @@ HTTP/1.1 200 OK
 
 ### Test 3: Database Connection ✅
 ```bash
-$ docker compose exec postgres psql -U tiraz -d tiraz_db -c "SELECT 1;"
+$ docker compose exec postgres psql -U taarez -d taarez_db -c "SELECT 1;"
  ?column? 
 ----------
         1
@@ -197,8 +197,8 @@ Changed 108 dependencies!
 ```bash
 $ docker compose ps
 NAME               IMAGE           COMMAND                  SERVICE    STATUS
-tiraz-backend-1    tiraz-backend   "./entrypoint.sh"        backend    Up
-tiraz-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up
+taarez-backend-1    taarez-backend   "./entrypoint.sh"        backend    Up
+taarez-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up
 ```
 
 ---
@@ -278,7 +278,7 @@ All critical infrastructure issues have been successfully resolved:
 5. ✅ Environment validation and setup scripts created
 6. ✅ Comprehensive documentation provided
 
-The Tiraz infrastructure is now **production-ready** and all services can communicate properly.
+The Taarez infrastructure is now **production-ready** and all services can communicate properly.
 
 ---
 

@@ -1,6 +1,6 @@
-# Tiraz MVP - Setup Guide
+# Taarez MVP - Setup Guide
 
-This guide will help you set up the Tiraz MVP application for local development.
+This guide will help you set up the Taarez MVP application for local development.
 
 ## Prerequisites
 
@@ -35,8 +35,8 @@ This is the easiest way to run backend services.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/OsmanMohamad249/Tiraz.git
-cd Tiraz
+git clone https://github.com/OsmanMohamad249/Taarez.git
+cd Taarez
 
 # 2. Start all services
 docker-compose up -d
@@ -45,10 +45,10 @@ docker-compose up -d
 docker-compose ps
 
 # You should see:
-# - tiraz-backend (port 5000)
-# - tiraz-ai (port 8000)
-# - tiraz-mongodb (port 27017)
-# - tiraz-mongo-express (port 8081)
+# - taarez-backend (port 5000)
+# - taarez-ai (port 8000)
+# - taarez-mongodb (port 27017)
+# - taarez-mongo-express (port 8081)
 
 # 4. Check logs if needed
 docker-compose logs -f backend
@@ -157,7 +157,7 @@ Edit `backend/.env`:
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/tiraz
+MONGODB_URI=mongodb://localhost:27017/taarez
 JWT_SECRET=your-secret-key-change-in-production
 JWT_EXPIRE=7d
 AI_SERVICE_URL=http://localhost:8000
@@ -184,7 +184,7 @@ const API_BASE_URL = 'http://localhost:5000/api/v1';
 curl http://localhost:5000/health
 
 # Expected response:
-# {"status":"success","message":"Tiraz API is running","timestamp":"..."}
+# {"status":"success","message":"Taarez API is running","timestamp":"..."}
 ```
 
 ### Test AI Service
@@ -194,7 +194,7 @@ curl http://localhost:5000/health
 curl http://localhost:8000/health
 
 # Expected response:
-# {"status":"healthy","service":"Tiraz AI Measurement Service","version":"1.0.0"}
+# {"status":"healthy","service":"Taarez AI Measurement Service","version":"1.0.0"}
 ```
 
 ### Test Mobile App
@@ -311,7 +311,7 @@ npm run android
 
 - Read [API.md](API.md) for API documentation
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for development guidelines
-- Explore the interactive prototype: Open `tiraz-prototype-v4.html` in browser
+- Explore the interactive prototype: Open `taarez-prototype-v4.html` in browser
 
 ## Support
 

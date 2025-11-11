@@ -1,4 +1,4 @@
-# Tiraz API Documentation
+# Taarez API Documentation
 
 Base URL: `http://localhost:5000/api/v1`
 
@@ -449,7 +449,7 @@ GET /health
 Response: 200 OK
 {
   "status": "success",
-  "message": "Tiraz API is running",
+  "message": "Taarez API is running",
   "timestamp": "2024-11-08T02:00:00.000Z"
 }
 ```

@@ -1,6 +1,6 @@
 # AI Models
 
-AI/ML models for the Tiraz platform (MVP).
+AI/ML models for the Taarez platform (MVP).
 
 ## Components
 

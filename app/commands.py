@@ -1,6 +1,6 @@
 """
-Flask CLI commands for Tiraz application
-أوامر التطبيق - Tiraz CLI Commands
+Flask CLI commands for Taarez application
+أوامر التطبيق - Taarez CLI Commands
 """
 import click
 from flask.cli import with_appcontext

@@ -44,7 +44,7 @@ flutter run --dart-define-from-file=config/dev.json
 **config/staging.json:**
 ```json
 {
-  "API_BASE_URL": "https://staging-api.tiraz.com",
+  "API_BASE_URL": "https://staging-api.taarez.com",
   "ENVIRONMENT": "staging"
 }
 ```
@@ -52,7 +52,7 @@ flutter run --dart-define-from-file=config/dev.json
 **config/prod.json:**
 ```json
 {
-  "API_BASE_URL": "https://api.tiraz.com",
+  "API_BASE_URL": "https://api.taarez.com",
   "ENVIRONMENT": "production"
 }
 ```
@@ -94,7 +94,7 @@ For development with self-signed certificates, you may need to configure certifi
 ## Building for Production
 
 ```bash
-flutter build apk --release --dart-define=API_BASE_URL=https://api.tiraz.com --dart-define=ENVIRONMENT=production
+flutter build apk --release --dart-define=API_BASE_URL=https://api.taarez.com --dart-define=ENVIRONMENT=production
 ```
 
 ## VSCode Configuration
@@ -118,7 +118,7 @@ Add to `.vscode/launch.json`:
       "request": "launch",
       "type": "dart",
       "args": [
-        "--dart-define=API_BASE_URL=https://api.tiraz.com",
+        "--dart-define=API_BASE_URL=https://api.taarez.com",
         "--dart-define=ENVIRONMENT=production"
       ]
     }

@@ -1,6 +1,6 @@
 """
-Tiraz Application Factory
-تطبيق طراز - Tiraz Application
+Taarez Application Factory
+تطبيق طراز - Taarez Application
 """
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy

@@ -117,7 +117,7 @@ docker-compose up --build
 docker-compose down
 
 # View database
-docker-compose exec postgres psql -U tiraz -d tiraz_db
+docker-compose exec postgres psql -U taarez -d taarez_db
 \dt
 SELECT * FROM users;
 \q

@@ -1,8 +1,8 @@
-# Tiraz Infrastructure Guide
+# Taarez Infrastructure Guide
 
 ## Overview
 
-Tiraz is a full-stack application with three main components:
+Taarez is a full-stack application with three main components:
 - **Backend**: FastAPI (Python) REST API running on port 8000
 - **Admin Portal**: Next.js (React/TypeScript) web application running on port 3000
 - **Mobile App**: Flutter mobile application
@@ -102,13 +102,13 @@ Controls Docker Compose environment:
 
 ```bash
 # Database credentials
-POSTGRES_USER=tiraz
-POSTGRES_PASSWORD=tiraz_password
-POSTGRES_DB=tiraz_db
+POSTGRES_USER=taarez
+POSTGRES_PASSWORD=taarez_password
+POSTGRES_DB=taarez_db
 
 # Backend configuration
 SECRET_KEY=<generated-secure-key>
-DATABASE_URL=postgresql://tiraz:tiraz_password@postgres:5432/tiraz_db
+DATABASE_URL=postgresql://taarez:taarez_password@postgres:5432/taarez_db
 
 # Environment
 ENVIRONMENT=development
@@ -121,7 +121,7 @@ Controls backend application:
 
 ```bash
 # Database
-DATABASE_URL=postgresql://tiraz:tiraz_password@postgres:5432/tiraz_db
+DATABASE_URL=postgresql://taarez:taarez_password@postgres:5432/taarez_db
 
 # Security
 SECRET_KEY=<generated-secure-key>
@@ -320,7 +320,7 @@ docker compose logs -f backend
 ### Access PostgreSQL
 
 ```bash
-docker compose exec postgres psql -U tiraz -d tiraz_db
+docker compose exec postgres psql -U taarez -d taarez_db
 ```
 
 ### Rebuild Services

@@ -28,8 +28,8 @@ Security Scan: ✅ PASSED (0 vulnerabilities)
 ```bash
 $ docker compose ps
 NAME               IMAGE           COMMAND                  SERVICE    STATUS
-tiraz-backend-1    tiraz-backend   "./entrypoint.sh"        backend    Up 3 minutes
-tiraz-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up 3 minutes
+taarez-backend-1    taarez-backend   "./entrypoint.sh"        backend    Up 3 minutes
+taarez-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up 3 minutes
 
 $ curl http://localhost:8000/health
 {"status":"ok","service":"tirez-backend"}
@@ -76,7 +76,7 @@ Changed 108 dependencies!
 ```bash
 $ cd backend && python validate_env.py
 ============================================================
-Tiraz Backend - Environment Validation
+Taarez Backend - Environment Validation
 ============================================================
 
 Checking required environment variables...
@@ -142,8 +142,8 @@ Checking optional environment variables...
 ### ✅ Database Connectivity Established
 - **Type**: PostgreSQL 15
 - **Host**: postgres (Docker network) / localhost:5432 (external)
-- **Database**: tiraz_db
-- **User**: tiraz
+- **Database**: taarez_db
+- **User**: taarez
 - **Status**: Accepting connections ✅
 - **Migrations**: All applied ✅
 
@@ -196,7 +196,7 @@ All comprehensive documentation has been created:
 $ ./test-infrastructure.sh
 
 ==============================================
-Tiraz Infrastructure Tests
+Taarez Infrastructure Tests
 ==============================================
 
 Checking Docker services...
@@ -242,7 +242,7 @@ HTTP/1.1 200 OK
 
 #### Database Connection ✅
 ```bash
-$ docker compose exec postgres psql -U tiraz -d tiraz_db -c "SELECT 1;"
+$ docker compose exec postgres psql -U taarez -d taarez_db -c "SELECT 1;"
  ?column? 
 ----------
         1
@@ -294,8 +294,8 @@ $ cd backend && python validate_env.py
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/OsmanMohamad249/Tiraz.git
-   cd Tiraz
+   git clone https://github.com/OsmanMohamad249/Taarez.git
+   cd Taarez
    ```
 
 2. **Setup Environment**
@@ -459,7 +459,7 @@ docker compose down -v && docker compose up -d
 
 **ALL INFRASTRUCTURE ISSUES HAVE BEEN SUCCESSFULLY RESOLVED**
 
-The Tiraz project infrastructure is now:
+The Taarez project infrastructure is now:
 - ✅ **Fully Functional**: All services running properly
 - ✅ **Well Documented**: Comprehensive guides provided
 - ✅ **Secure**: Security scan passed, no vulnerabilities

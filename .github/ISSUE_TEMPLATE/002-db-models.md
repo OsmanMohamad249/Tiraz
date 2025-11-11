@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 ## Description
-Create MongoDB database models and data access layer for the Tiraz application.
+Create MongoDB database models and data access layer for the Taarez application.
 
 ## Objectives
 - [ ] Set up MongoDB connection using Motor (async MongoDB driver)
@@ -66,7 +66,7 @@ Create MongoDB database models and data access layer for the Tiraz application.
 ## Environment Variables
 ```
 MONGODB_URL=mongodb://localhost:27017
-DATABASE_NAME=tiraz_db
+DATABASE_NAME=taarez_db
 ```
 
 ## Acceptance Criteria

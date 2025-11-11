@@ -1,7 +1,7 @@
-# Tiraz Mobile App (Flutter)
+# Taarez Mobile App (Flutter)
 
 ## Overview
-This is the Flutter mobile application for Tiraz - an AI tailoring app for customers and designers.
+This is the Flutter mobile application for Taarez - an AI tailoring app for customers and designers.
 
 ## Project Structure
 ```

@@ -2,13 +2,13 @@
 
 ## Overview
 
-This repository has been transformed from a simple Flask demo application to the comprehensive Tiraz AI Tailoring MVP platform.
+This repository has been transformed from a simple Flask demo application to the comprehensive Taarez AI Tailoring MVP platform.
 
 ## What Changed
 
 ### Old Structure (Flask Demo)
 ```
-Tiraz/
+Taarez/
 ├── app/              # Flask application
 ├── config/           # Flask config
 ├── tests/            # Flask tests
@@ -18,13 +18,13 @@ Tiraz/
 
 ### New Structure (MVP)
 ```
-Tiraz/
+Taarez/
 ├── mobile-app/          # React Native mobile application
 ├── backend/             # Node.js/Express API server
 ├── ai-models/           # Python AI/ML services
 ├── docs/                # Comprehensive documentation
 ├── docker-compose.yml   # Local development environment
-├── tiraz-prototype-v4.html  # Interactive prototype
+├── taarez-prototype-v4.html  # Interactive prototype
 └── README.md            # MVP documentation
 ```
 
@@ -71,7 +71,7 @@ To work with the new MVP structure:
 
 ## Why the Change?
 
-The original Flask demo was a learning project. The MVP represents the actual Tiraz AI Tailoring Platform with:
+The original Flask demo was a learning project. The MVP represents the actual Taarez AI Tailoring Platform with:
 
 - Production-ready architecture
 - Mobile-first approach

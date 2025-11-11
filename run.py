@@ -1,6 +1,6 @@
 """
-Main entry point for Tiraz application
-تطبيق طراز - Tiraz Application
+Main entry point for Taarez application
+تطبيق طراز - Taarez Application
 """
 import os
 from dotenv import load_dotenv

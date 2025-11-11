@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Environment validation script for Tiraz Backend
+Environment validation script for Taarez Backend
 Validates that all required environment variables are properly set
 """
 
@@ -32,7 +32,7 @@ def validate_env():
     }
 
     print("=" * 60)
-    print("Tiraz Backend - Environment Validation")
+    print("Taarez Backend - Environment Validation")
     print("=" * 60)
     print()
 

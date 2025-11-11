@@ -114,7 +114,7 @@ Update `mobile-app/lib/utils/app_config.dart` if needed:
 static String get apiUrl {
   // Point to your backend
   return 'http://localhost:8000';  // Local
-  // return 'https://api.tiraz.com';  // Production
+  // return 'https://api.taarez.com';  // Production
 }
 ```
 

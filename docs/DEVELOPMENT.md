@@ -1,13 +1,13 @@
 # Development Workflow
 
-This guide covers the development workflow for the Tiraz MVP application.
+This guide covers the development workflow for the Taarez MVP application.
 
 ## Getting Started
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Tiraz.git
-   cd Tiraz
+   git clone https://github.com/YOUR_USERNAME/Taarez.git
+   cd Taarez
    ```
 
 2. **Create Feature Branch**
@@ -296,7 +296,7 @@ Fixes #456
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/tiraz
+MONGODB_URI=mongodb://localhost:27017/taarez
 JWT_SECRET=change-in-production
 AI_SERVICE_URL=http://localhost:8000
 ```
@@ -312,7 +312,7 @@ DEBUG=True
 // src/config.js
 export const API_BASE_URL = __DEV__ 
   ? 'http://localhost:5000/api/v1'
-  : 'https://api.tiraz.com/api/v1';
+  : 'https://api.taarez.com/api/v1';
 ```
 
 ## Debugging
