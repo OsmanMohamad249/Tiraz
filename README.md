@@ -1,4 +1,4 @@
-Taarez (طِرَاز) - AI Tailoring App (FastAPI + Flutter)
+Taarez (طارز) - AI Tailoring App (FastAPI + Flutter)
 
 This is the official repository for the "Taarez" application, an MVP (Minimum Viable Product) aiming to revolutionize custom tailoring by using AI for body measurements.
 
