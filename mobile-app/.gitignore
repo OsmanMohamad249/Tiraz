@@ -3,6 +3,5 @@
 /.dart_tool/
 /.packages
 
-# Generated files
-*.freezed.dart
+# Generated files (excluding freezed files which should be committed)
 *.g.dart
