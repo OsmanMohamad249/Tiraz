@@ -80,39 +80,44 @@ def upgrade() -> None:
     # Update designs table - rename columns and add new fields
     # Rename title to name
     op.alter_column("designs", "title", new_column_name="name")
-    
+
     # Rename price to base_price
     op.alter_column("designs", "price", new_column_name="base_price")
-    
+
     # Rename image_url to base_image_url
     op.alter_column("designs", "image_url", new_column_name="base_image_url")
-    
+
     # Rename designer_id to owner_id
     op.alter_column("designs", "designer_id", new_column_name="owner_id")
-    
+
     # Add customization_rules JSON column
-    op.add_column("designs", sa.Column("customization_rules", postgresql.JSON(astext_type=sa.Text()), nullable=True))
+    op.add_column(
+        "designs",
+        sa.Column(
+            "customization_rules", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
+    )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     # Remove customization_rules from designs
     op.drop_column("designs", "customization_rules")
-    
+
     # Rename columns back
     op.alter_column("designs", "owner_id", new_column_name="designer_id")
     op.alter_column("designs", "base_image_url", new_column_name="image_url")
     op.alter_column("designs", "base_price", new_column_name="price")
     op.alter_column("designs", "name", new_column_name="title")
-    
+
     # Drop association tables
     op.drop_table("design_color")
     op.drop_table("design_fabric")
-    
+
     # Drop colors table
     op.drop_index(op.f("ix_colors_name"), table_name="colors")
     op.drop_table("colors")
-    
+
     # Drop fabrics table
     op.drop_index(op.f("ix_fabrics_name"), table_name="fabrics")
     op.drop_table("fabrics")
