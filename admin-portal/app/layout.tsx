@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Taarez Admin Portal',
-  description: 'Admin portal for Taarez AI tailoring platform',
+  title: 'Qeyafa Admin Portal',
+  description: 'Admin portal for Qeyafa AI tailoring platform',
 }
 
 export default function RootLayout({

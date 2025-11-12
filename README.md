@@ -1,6 +1,6 @@
-Taarez (طارز) - AI Tailoring App (FastAPI + Flutter)
+Qeyafa (قيافة) - AI Tailoring App (FastAPI + Flutter)
 
-This is the official repository for the "Taarez" application, an MVP (Minimum Viable Product) aiming to revolutionize custom tailoring by using AI for body measurements.
+This is the official repository for the "Qeyafa" application, an MVP (Minimum Viable Product) aiming to revolutionize custom tailoring by using AI for body measurements.
 
 Current Status: Sprint 0 (Boilerplate Setup) is COMPLETE.
 The main branch is 100% clean, healthy, and ready for Sprint 1 development to begin.
@@ -63,7 +63,7 @@ docker-compose down
 
 📁 Project Structure
 
-Taarez/
+Qeyafa/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml          # (FastAPI CI Quality Check)

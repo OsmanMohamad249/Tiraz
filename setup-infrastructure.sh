@@ -1,11 +1,11 @@
 #!/bin/bash
-# Taarez Infrastructure Setup Script
-# This script sets up the development environment for Taarez
+# Qeyafa Infrastructure Setup Script
+# This script sets up the development environment for Qeyafa
 
 set -e
 
 echo "=============================================="
-echo "Taarez Infrastructure Setup"
+echo "Qeyafa Infrastructure Setup"
 echo "=============================================="
 echo ""
 

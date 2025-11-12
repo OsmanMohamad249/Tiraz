@@ -1,8 +1,8 @@
-// Taarez Application JavaScript
-// تطبيق طراز
+// Qeyafa Application JavaScript
+// تطبيق قيافة
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Taarez Application loaded - تطبيق طراز محمّل');
+    console.log('Qeyafa Application loaded - تطبيق قيافة محمّل');
 
     // Auto-hide flash messages after 5 seconds
     const flashMessages = document.querySelectorAll('.flash');
