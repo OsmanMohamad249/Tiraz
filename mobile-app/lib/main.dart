@@ -6,16 +6,16 @@ import 'features/auth/presentation/splash_screen.dart';
 void main() {
   runApp(
     ProviderScope(
-      child: TaarezApp(),
+      child: QeyafaApp(),
     ),
   );
 }
 
-class TaarezApp extends StatelessWidget {
+class QeyafaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Taarez',
+      title: 'Qeyafa',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

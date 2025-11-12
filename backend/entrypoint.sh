@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Starting Taarez Backend..."
+echo "Starting Qeyafa Backend..."
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL to be ready..."

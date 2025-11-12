@@ -1,6 +1,6 @@
-# Taarez MVP - Setup Guide
+# Qeyafa MVP - Setup Guide
 
-This guide will help you set up the Taarez MVP application for local development.
+This guide will help you set up the Qeyafa MVP application for local development.
 
 ## Prerequisites
 
@@ -35,8 +35,8 @@ This is the easiest way to run backend services.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/OsmanMohamad249/Taarez.git
-cd Taarez
+git clone https://github.com/OsmanMohamad249/Qeyafa.git
+cd Qeyafa
 
 # 2. Start all services
 docker-compose up -d
@@ -45,10 +45,10 @@ docker-compose up -d
 docker-compose ps
 
 # You should see:
-# - taarez-backend (port 5000)
-# - taarez-ai (port 8000)
-# - taarez-mongodb (port 27017)
-# - taarez-mongo-express (port 8081)
+# - qeyafa-backend (port 5000)
+# - qeyafa-ai (port 8000)
+# - qeyafa-mongodb (port 27017)
+# - qeyafa-mongo-express (port 8081)
 
 # 4. Check logs if needed
 docker-compose logs -f backend
@@ -184,7 +184,7 @@ const API_BASE_URL = 'http://localhost:5000/api/v1';
 curl http://localhost:5000/health
 
 # Expected response:
-# {"status":"success","message":"Taarez API is running","timestamp":"..."}
+# {"status":"success","message":"Qeyafa API is running","timestamp":"..."}
 ```
 
 ### Test AI Service
@@ -194,7 +194,7 @@ curl http://localhost:5000/health
 curl http://localhost:8000/health
 
 # Expected response:
-# {"status":"healthy","service":"Taarez AI Measurement Service","version":"1.0.0"}
+# {"status":"healthy","service":"Qeyafa AI Measurement Service","version":"1.0.0"}
 ```
 
 ### Test Mobile App
@@ -311,7 +311,7 @@ npm run android
 
 - Read [API.md](API.md) for API documentation
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for development guidelines
-- Explore the interactive prototype: Open `taarez-prototype-v4.html` in browser
+- Explore the interactive prototype: Open `qeyafa-prototype-v4.html` in browser
 
 ## Support
 
