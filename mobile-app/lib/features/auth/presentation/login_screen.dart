@@ -84,7 +84,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Welcome to Taarez',
+                  'Welcome to Qeyafa',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

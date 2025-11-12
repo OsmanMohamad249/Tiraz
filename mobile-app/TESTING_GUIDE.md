@@ -57,7 +57,7 @@ flutter precache --web
 When the app runs successfully, you should see:
 
 1. **Splash Screen** (initial load)
-   - Shows "Taarez" logo and loading indicator
+   - Shows "Qeyafa" logo and loading indicator
    - Automatically checks authentication status
    - Redirects to Login or Home based on auth state
 

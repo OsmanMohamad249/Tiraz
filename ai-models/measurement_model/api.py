@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Taarez AI Measurement Service
+Qeyafa AI Measurement Service
 FastAPI API for body measurement extraction from photos
 """
 
@@ -26,7 +26,7 @@ async def health_check():
     """Health check endpoint"""
     return {
         'status': 'healthy',
-        'service': 'Taarez AI Measurement Service',
+        'service': 'Qeyafa AI Measurement Service',
         'version': '1.0.0'
     }
 
@@ -173,7 +173,7 @@ async def validate_photo(photo: UploadFile = File(...)):
         )
 
 # Create FastAPI app and include router
-app = FastAPI(title="Taarez AI Measurement Service", version="1.0.0")
+app = FastAPI(title="Qeyafa AI Measurement Service", version="1.0.0")
 
 # Configure CORS
 app.add_middleware(
@@ -191,6 +191,6 @@ if __name__ == '__main__':
     import uvicorn
     port = int(os.getenv('PORT', 8000))
     
-    print(f"🚀 Starting Taarez AI Measurement Service on port {port}")
+    print(f"🚀 Starting Qeyafa AI Measurement Service on port {port}")
     
     uvicorn.run(app, host='0.0.0.0', port=port)

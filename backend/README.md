@@ -1,7 +1,7 @@
 ```markdown
-# Backend (FastAPI) - Taarez
+# Backend (FastAPI) - Qeyafa
 
-This folder contains the FastAPI backend application for Taarez with secure configuration and modular structure.
+This folder contains the FastAPI backend application for Qeyafa with secure configuration and modular structure.
 
 ## Quick Start (Local Development)
 
@@ -53,11 +53,11 @@ docker-compose up backend
 
 Building manually:
 ```bash
-docker build -t taarez-backend:dev -f Dockerfile .
+docker build -t qeyafa-backend:dev -f Dockerfile .
 docker run --rm -p 8000:8000 \
   -e DATABASE_URL=your_db_url \
   -e SECRET_KEY=your_secret_key \
-  taarez-backend:dev
+  qeyafa-backend:dev
 ```
 
 ## Configuration
@@ -125,10 +125,10 @@ pytest tests/ --cov=. --cov-report=html
 **Note**: Database tests require a running PostgreSQL instance. Set up the database:
 ```bash
 # Using Docker
-docker run -d --name taarez-test-db \
-  -e POSTGRES_USER=taarez \
-  -e POSTGRES_PASSWORD=taarez_password \
-  -e POSTGRES_DB=taarez_test_db \
+docker run -d --name qeyafa-test-db \
+  -e POSTGRES_USER=qeyafa \
+  -e POSTGRES_PASSWORD=qeyafa_password \
+  -e POSTGRES_DB=qeyafa_test_db \
   -p 5432:5432 \
   postgres:15
 

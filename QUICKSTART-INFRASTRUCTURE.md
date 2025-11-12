@@ -1,4 +1,4 @@
-# 🎯 Taarez Infrastructure - Quick Start
+# 🎯 Qeyafa Infrastructure - Quick Start
 
 ## Status: ✅ ALL SYSTEMS OPERATIONAL
 
@@ -115,7 +115,7 @@ docker compose logs backend
 ### Database issues?
 ```bash
 docker compose ps postgres
-docker compose exec postgres psql -U taarez -d taarez_db
+docker compose exec postgres psql -U qeyafa -d qeyafa_db
 ```
 
 ### Flutter issues?
@@ -242,7 +242,7 @@ Expected output:
 ## 📝 Project Structure
 
 ```
-Taarez/
+Qeyafa/
 ├── backend/              # FastAPI backend
 │   ├── Dockerfile        # ✅ Fixed: Python 3.11
 │   ├── entrypoint.sh     # ✅ New: Auto-migrations

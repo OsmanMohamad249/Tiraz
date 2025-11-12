@@ -1,14 +1,14 @@
-# 🔧 GitHub Codespaces Configuration for Taarez
+# 🔧 GitHub Codespaces Configuration for Qeyafa
 
 ## Overview
-This guide explains how to run Taarez in GitHub Codespaces with proper authentication and networking.
+This guide explains how to run Qeyafa in GitHub Codespaces with proper authentication and networking.
 
 ## 🚀 Quick Start in Codespaces
 
 ### 1. Start the Application
 ```bash
 # Make sure you're in the project root
-cd /workspaces/Taarez
+cd /workspaces/Qeyafa
 
 # Start all services with Docker Compose
 docker compose up -d
@@ -142,7 +142,7 @@ docker compose ps postgres
 docker compose restart postgres
 
 # Check database connectivity
-docker compose exec postgres psql -U taarez -d taarez_db -c "SELECT 1;"
+docker compose exec postgres psql -U qeyafa -d qeyafa_db -c "SELECT 1;"
 ```
 
 ### Issue: Test users not created
@@ -164,7 +164,7 @@ docker compose up -d
 ### 1. Backend Health Check
 ```bash
 curl https://YOUR-CODESPACE-8000.app.github.dev/health
-# Expected: {"status":"ok","service":"taarez-backend"}
+# Expected: {"status":"ok","service":"qeyafa-backend"}
 ```
 
 ### 2. API Documentation

@@ -2,7 +2,7 @@
 
 ## What Was Built
 
-A complete, professional Flutter UI for designers to manage their creations in the Taarez mobile app.
+A complete, professional Flutter UI for designers to manage their creations in the Qeyafa mobile app.
 
 ## Key Features Implemented
 

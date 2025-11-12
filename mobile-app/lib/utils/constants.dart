@@ -16,7 +16,7 @@ class Constants {
   static const String roleTailor = 'tailor';
   
   // App Configuration
-  static const String appName = 'Taarez';
+  static const String appName = 'Qeyafa';
   static const String appVersion = '0.1.0';
   
   // Pagination

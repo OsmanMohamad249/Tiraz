@@ -61,7 +61,7 @@ flutter run --dart-define=API_BASE_URL=http://your-backend:8000
 ### Environment Variables (.env)
 ```bash
 SECRET_KEY=<strong-secret-key>
-DATABASE_URL=postgresql://taarez:taarez_password@postgres:5432/taarez_db
+DATABASE_URL=postgresql://qeyafa:qeyafa_password@postgres:5432/qeyafa_db
 CORS_ORIGINS=http://localhost:3000,http://localhost:8080
 ```
 

@@ -1,8 +1,8 @@
-# 🚀 IMMEDIATE DEPLOYMENT GUIDE - Taarez Authentication Fix
+# 🚀 IMMEDIATE DEPLOYMENT GUIDE - Qeyafa Authentication Fix
 
 ## ⏱️ Time to Deploy: 5 minutes
 
-This guide will get your Taarez application running with working authentication in GitHub Codespaces.
+This guide will get your Qeyafa application running with working authentication in GitHub Codespaces.
 
 ---
 
@@ -20,7 +20,7 @@ Before starting, ensure you have:
 
 ### Step 1: Navigate to Project Directory (10 seconds)
 ```bash
-cd /workspaces/Taarez
+cd /workspaces/Qeyafa
 ```
 
 ### Step 2: Configure for Codespaces (30 seconds)
@@ -104,7 +104,7 @@ docker compose logs -f backend
 2. **Open Flutter Web Application:**
    - Go to PORTS tab
    - Click on the URL for port **8080** (or globe icon)
-   - You should see the Taarez login page
+   - You should see the Qeyafa login page
 
 ### Step 7: Login (30 seconds)
 
@@ -255,7 +255,7 @@ docker compose ps
 
 ### Check Database
 ```bash
-docker compose exec postgres psql -U taarez -d taarez_db
+docker compose exec postgres psql -U qeyafa -d qeyafa_db
 # In psql:
 SELECT email, role FROM users;
 \q
@@ -340,7 +340,7 @@ docker compose logs flutter-dev
 
 ## 🎉 Success!
 
-If you can login with test@example.com and see the dashboard, **congratulations!** Your Taarez application is now fully functional with:
+If you can login with test@example.com and see the dashboard, **congratulations!** Your Qeyafa application is now fully functional with:
 
 ✅ Working authentication system  
 ✅ Database with test users  

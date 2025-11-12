@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from api.v1.api import api_router
 
-app = FastAPI(title="Taarez Backend (FastAPI)")
+app = FastAPI(title="Qeyafa Backend (FastAPI)")
 
 # Configure CORS with settings from environment
 # Support for GitHub Codespaces with regex patterns
@@ -32,4 +32,4 @@ app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/health", tags=["health"])
 async def health():
-    return {"status": "ok", "service": "taarez-backend"}
+    return {"status": "ok", "service": "qeyafa-backend"}

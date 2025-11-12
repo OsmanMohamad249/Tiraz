@@ -1,4 +1,4 @@
-# 🏗️ Taarez Architecture - Post-Fix
+# 🏗️ Qeyafa Architecture - Post-Fix
 
 ## System Architecture Overview
 
@@ -323,7 +323,7 @@ docker compose up -d
 ## File Structure
 
 ```
-Taarez/
+Qeyafa/
 ├── .env                          ← Environment config (updated)
 ├── .gitignore                    ← Git ignore (updated)
 ├── docker-compose.yml            ← Service definitions

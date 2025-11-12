@@ -1,8 +1,8 @@
-# Taarez Infrastructure Guide
+# Qeyafa Infrastructure Guide
 
 ## Overview
 
-Taarez is a full-stack application with three main components:
+Qeyafa is a full-stack application with three main components:
 - **Backend**: FastAPI (Python) REST API running on port 8000
 - **Admin Portal**: Next.js (React/TypeScript) web application running on port 3000
 - **Mobile App**: Flutter mobile application
@@ -102,13 +102,13 @@ Controls Docker Compose environment:
 
 ```bash
 # Database credentials
-POSTGRES_USER=taarez
-POSTGRES_PASSWORD=taarez_password
-POSTGRES_DB=taarez_db
+POSTGRES_USER=qeyafa
+POSTGRES_PASSWORD=qeyafa_password
+POSTGRES_DB=qeyafa_db
 
 # Backend configuration
 SECRET_KEY=<generated-secure-key>
-DATABASE_URL=postgresql://taarez:taarez_password@postgres:5432/taarez_db
+DATABASE_URL=postgresql://qeyafa:qeyafa_password@postgres:5432/qeyafa_db
 
 # Environment
 ENVIRONMENT=development
@@ -121,7 +121,7 @@ Controls backend application:
 
 ```bash
 # Database
-DATABASE_URL=postgresql://taarez:taarez_password@postgres:5432/taarez_db
+DATABASE_URL=postgresql://qeyafa:qeyafa_password@postgres:5432/qeyafa_db
 
 # Security
 SECRET_KEY=<generated-secure-key>
@@ -320,7 +320,7 @@ docker compose logs -f backend
 ### Access PostgreSQL
 
 ```bash
-docker compose exec postgres psql -U taarez -d taarez_db
+docker compose exec postgres psql -U qeyafa -d qeyafa_db
 ```
 
 ### Rebuild Services

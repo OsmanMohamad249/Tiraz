@@ -1,13 +1,13 @@
 """
-Basic tests for Taarez application
+Basic tests for Qeyafa application
 """
 import unittest
 from app import create_app, db
 from app.models import Item
 
 
-class TaarezTestCase(unittest.TestCase):
-    """Test cases for Taarez application"""
+class QeyafaTestCase(unittest.TestCase):
+    """Test cases for Qeyafa application"""
 
     def setUp(self):
         """Set up test client and database"""
@@ -35,7 +35,7 @@ class TaarezTestCase(unittest.TestCase):
         """Test that the home page loads"""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Taarez', response.data)
+        self.assertIn(b'Qeyafa', response.data)
 
     def test_about_page(self):
         """Test that the about page loads"""

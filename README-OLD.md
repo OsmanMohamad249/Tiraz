@@ -1,4 +1,4 @@
-# تطبيق طراز - Taarez Application
+# تطبيق طراز - Qeyafa Application
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
@@ -8,7 +8,7 @@
 
 **طراز** هو تطبيق ويب نموذجي متكامل مبني باستخدام Flask وPython. يوفر التطبيق نظاماً لإدارة العناصر مع إمكانية تصنيفها حسب الأنماط والتصاميم.
 
-**Taarez** is a complete model web application built with Flask and Python. It provides a comprehensive system for managing items with the ability to categorize them by styles and designs.
+**Qeyafa** is a complete model web application built with Flask and Python. It provides a comprehensive system for managing items with the ability to categorize them by styles and designs.
 
 ## المميزات - Features
 
@@ -23,7 +23,7 @@
 ## الهيكل المعماري - Project Structure
 
 ```
-Taarez/
+Qeyafa/
 ├── app/
 │   ├── __init__.py           # Application factory
 │   ├── models/               # Database models
@@ -68,8 +68,8 @@ Taarez/
 ### 1. استنساخ المستودع - Clone the Repository
 
 ```bash
-git clone https://github.com/OsmanMohamad249/Taarez.git
-cd Taarez
+git clone https://github.com/OsmanMohamad249/Qeyafa.git
+cd Qeyafa
 ```
 
 ### 2. إنشاء بيئة افتراضية - Create Virtual Environment
@@ -199,7 +199,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Osman Mohamad - [@OsmanMohamad249](https://github.com/OsmanMohamad249)
 
-رابط المشروع: [https://github.com/OsmanMohamad249/Taarez](https://github.com/OsmanMohamad249/Taarez)
+رابط المشروع: [https://github.com/OsmanMohamad249/Qeyafa](https://github.com/OsmanMohamad249/Qeyafa)
 
 ---
 

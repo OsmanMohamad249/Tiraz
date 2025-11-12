@@ -1,6 +1,6 @@
 # AI Models
 
-AI/ML models for the Taarez platform (MVP).
+AI/ML models for the Qeyafa platform (MVP).
 
 ## Components
 

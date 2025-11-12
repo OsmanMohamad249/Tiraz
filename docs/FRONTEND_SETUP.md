@@ -1,13 +1,13 @@
 # Frontend Infrastructure Setup - Complete
 
 ## Overview
-This document provides a comprehensive guide to the frontend infrastructure for Taarez, which consists of two main applications:
+This document provides a comprehensive guide to the frontend infrastructure for Qeyafa, which consists of two main applications:
 1. **Flutter Mobile App** - For customers and designers
 2. **Next.js Admin Portal** - For administrators and management
 
 ## Project Structure
 ```
-Taarez/
+Qeyafa/
 ├── backend/                # FastAPI backend (Python)
 ├── mobile-app/            # Flutter mobile app (Dart)
 ├── admin-portal/          # Next.js admin portal (TypeScript)

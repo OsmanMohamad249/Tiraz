@@ -1,7 +1,7 @@
 # Sprint 1: User Authentication System - Setup Guide
 
 ## Overview
-This guide will help you set up and run the complete Taarez authentication system with FastAPI backend and Flutter mobile app.
+This guide will help you set up and run the complete Qeyafa authentication system with FastAPI backend and Flutter mobile app.
 
 ## Prerequisites
 
@@ -165,7 +165,7 @@ To view the PostgreSQL database:
 
 ```bash
 # Access the database
-docker-compose exec postgres psql -U taarez -d taarez_db
+docker-compose exec postgres psql -U qeyafa -d qeyafa_db
 
 # List tables
 \dt

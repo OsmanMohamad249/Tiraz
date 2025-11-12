@@ -157,7 +157,7 @@ Edit `backend/.env`:
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/taarez
+MONGODB_URI=mongodb://localhost:27017/qeyafa
 JWT_SECRET=your-secret-key-change-in-production
 JWT_EXPIRE=7d
 AI_SERVICE_URL=http://localhost:8000

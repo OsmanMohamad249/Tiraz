@@ -1,4 +1,4 @@
-# Taarez API Documentation
+# Qeyafa API Documentation
 
 Base URL: `http://localhost:5000/api/v1`
 
@@ -449,7 +449,7 @@ GET /health
 Response: 200 OK
 {
   "status": "success",
-  "message": "Taarez API is running",
+  "message": "Qeyafa API is running",
   "timestamp": "2024-11-08T02:00:00.000Z"
 }
 ```

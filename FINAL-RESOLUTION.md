@@ -28,8 +28,8 @@ Security Scan: ✅ PASSED (0 vulnerabilities)
 ```bash
 $ docker compose ps
 NAME               IMAGE           COMMAND                  SERVICE    STATUS
-taarez-backend-1    taarez-backend   "./entrypoint.sh"        backend    Up 3 minutes
-taarez-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up 3 minutes
+qeyafa-backend-1    qeyafa-backend   "./entrypoint.sh"        backend    Up 3 minutes
+qeyafa-postgres-1   postgres:15     "docker-entrypoint.s…"   postgres   Up 3 minutes
 
 $ curl http://localhost:8000/health
 {"status":"ok","service":"tirez-backend"}
@@ -76,7 +76,7 @@ Changed 108 dependencies!
 ```bash
 $ cd backend && python validate_env.py
 ============================================================
-Taarez Backend - Environment Validation
+Qeyafa Backend - Environment Validation
 ============================================================
 
 Checking required environment variables...
@@ -142,8 +142,8 @@ Checking optional environment variables...
 ### ✅ Database Connectivity Established
 - **Type**: PostgreSQL 15
 - **Host**: postgres (Docker network) / localhost:5432 (external)
-- **Database**: taarez_db
-- **User**: taarez
+- **Database**: qeyafa_db
+- **User**: qeyafa
 - **Status**: Accepting connections ✅
 - **Migrations**: All applied ✅
 
@@ -196,7 +196,7 @@ All comprehensive documentation has been created:
 $ ./test-infrastructure.sh
 
 ==============================================
-Taarez Infrastructure Tests
+Qeyafa Infrastructure Tests
 ==============================================
 
 Checking Docker services...
@@ -242,7 +242,7 @@ HTTP/1.1 200 OK
 
 #### Database Connection ✅
 ```bash
-$ docker compose exec postgres psql -U taarez -d taarez_db -c "SELECT 1;"
+$ docker compose exec postgres psql -U qeyafa -d qeyafa_db -c "SELECT 1;"
  ?column? 
 ----------
         1
@@ -294,8 +294,8 @@ $ cd backend && python validate_env.py
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/OsmanMohamad249/Taarez.git
-   cd Taarez
+   git clone https://github.com/OsmanMohamad249/Qeyafa.git
+   cd Qeyafa
    ```
 
 2. **Setup Environment**
@@ -459,7 +459,7 @@ docker compose down -v && docker compose up -d
 
 **ALL INFRASTRUCTURE ISSUES HAVE BEEN SUCCESSFULLY RESOLVED**
 
-The Taarez project infrastructure is now:
+The Qeyafa project infrastructure is now:
 - ✅ **Fully Functional**: All services running properly
 - ✅ **Well Documented**: Comprehensive guides provided
 - ✅ **Secure**: Security scan passed, no vulnerabilities
