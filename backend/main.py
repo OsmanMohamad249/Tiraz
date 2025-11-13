@@ -32,11 +32,16 @@ app.add_middleware(
 
 # Rate limiting setup (Redis)
 import asyncio
+
 @app.on_event("startup")
 async def startup():
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    redis_client = redis.from_url(redis_url, encoding="utf8", decode_responses=True)
-    await FastAPILimiter.init(redis_client)
+    try:
+        redis_client = redis.from_url(redis_url, encoding="utf8", decode_responses=True)
+        await FastAPILimiter.init(redis_client)
+        print("✅ Redis rate limiting enabled.")
+    except Exception as e:
+        print(f"⚠️ Redis not available, rate limiting disabled. Reason: {e}")
 
 # Include API routers
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
