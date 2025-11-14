@@ -18,9 +18,12 @@ async def _safe_default_identifier(request):
     # Fallback to loopback for tests or unknown client
     return "127.0.0.1"
 
-_fal_depends.default_identifier = _safe_default_identifier
-# Also patch the top-level fastapi_limiter reference some modules use
-_fal.default_identifier = _safe_default_identifier
+if os.getenv("TESTING", "false").lower() == "true":
+    # Only apply this test-only fallback when running tests to avoid
+    # changing runtime behavior in non-test environments.
+    _fal_depends.default_identifier = _safe_default_identifier
+    # Also patch the top-level fastapi_limiter reference some modules use
+    _fal.default_identifier = _safe_default_identifier
 
 from core.config import settings
 from api.v1.api import api_router
