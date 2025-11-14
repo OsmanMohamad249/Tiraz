@@ -3,15 +3,13 @@ Pytest configuration for backend tests.
 """
 import pytest
 from fastapi.testclient import TestClient
-from main import app as main_app
 import os
 from dotenv import load_dotenv
 
-# Load test environment variables
+# Load test environment variables early
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env.test'))
 
-
-# Mock RateLimiter for tests
+# Mock RateLimiter for tests - do this before importing the application
 import fastapi_limiter
 from fastapi_limiter.depends import RateLimiter
 
@@ -22,11 +20,14 @@ class MockRedis:
     async def evalsha(self, sha, keys, *args):
         return 0
 
+from starlette.requests import Request
+from starlette.responses import Response
+
 class MockRateLimiter:
     def __init__(self, times=None, seconds=None):
         pass
 
-    async def __call__(self, request, response):
+    async def __call__(self, request: Request, response: Response):
         return None
 
 # Initialize FastAPILimiter with mock redis before anything else
@@ -34,8 +35,11 @@ import asyncio
 mock_redis = MockRedis()
 asyncio.run(fastapi_limiter.FastAPILimiter.init(mock_redis))
 
-# Monkey patch RateLimiter
+# Monkey patch RateLimiter early so module-level imports pick it up
 fastapi_limiter.depends.RateLimiter = MockRateLimiter
+
+# Import the application after the RateLimiter is mocked
+from main import app as main_app
 
 
 @pytest.fixture(scope="session")

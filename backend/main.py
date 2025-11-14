@@ -3,6 +3,24 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
+import fastapi_limiter.depends as _fal_depends
+import fastapi_limiter as _fal
+
+
+# Ensure fastapi_limiter has a safe identifier when running under TestClient
+async def _safe_default_identifier(request):
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0]
+    client = getattr(request, "client", None)
+    if client is not None and getattr(client, "host", None):
+        return client.host
+    # Fallback to loopback for tests or unknown client
+    return "127.0.0.1"
+
+_fal_depends.default_identifier = _safe_default_identifier
+# Also patch the top-level fastapi_limiter reference some modules use
+_fal.default_identifier = _safe_default_identifier
 
 from core.config import settings
 from api.v1.api import api_router
