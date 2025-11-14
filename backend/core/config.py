@@ -3,7 +3,8 @@ Configuration settings for the application.
 """
 
 from typing import List
-from pydantic import BaseSettings, Field, validator
+from pydantic_settings import BaseSettings
+from pydantic import Field, validator
 
 
 class Settings(BaseSettings):
@@ -20,6 +21,11 @@ class Settings(BaseSettings):
         ...,
         description="Database connection URL (e.g., postgresql://user:pass@host:port/db)",
     )
+    # Extra fields to avoid Pydantic v2 validation errors
+    POSTGRES_USER: str = Field(default=None, description="Postgres username", env="POSTGRES_USER")
+    POSTGRES_PASSWORD: str = Field(default=None, description="Postgres password", env="POSTGRES_PASSWORD")
+    POSTGRES_DB: str = Field(default=None, description="Postgres database name", env="POSTGRES_DB")
+    CORS_ORIGINS: str = Field(default=None, description="CORS origins (legacy)", env="CORS_ORIGINS")
 
     # Security - REQUIRED, no default for security
     SECRET_KEY: str = Field(
