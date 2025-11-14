@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from backend.core.database import Base
+from core.database import Base
 
 # Association table for Design-Fabric many-to-many relationship
 design_fabric_association = Table(

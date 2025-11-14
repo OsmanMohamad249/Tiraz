@@ -2,7 +2,7 @@
 CRUD package.
 """
 
-from backend.crud.fabric import (
+from crud.fabric import (
     get_fabric,
     get_fabric_by_name,
     get_fabrics,
@@ -10,7 +10,7 @@ from backend.crud.fabric import (
     update_fabric,
     delete_fabric,
 )
-from backend.crud.color import (
+from crud.color import (
     get_color,
     get_color_by_name,
     get_colors,
@@ -18,7 +18,7 @@ from backend.crud.color import (
     update_color,
     delete_color,
 )
-from backend.crud.design import (
+from crud.design import (
     get_design,
     get_designs,
     create_design,

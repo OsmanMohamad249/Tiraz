@@ -7,7 +7,7 @@ import hashlib
 import bcrypt
 from jose import JWTError, jwt
 
-from backend.core.config import settings
+from core.config import settings
 
 
 def hash_password(password: str) -> str:

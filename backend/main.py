@@ -4,8 +4,8 @@ import os
 from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
 
-from backend.core.config import settings
-from backend.api.v1.api import api_router
+from core.config import settings
+from api.v1.api import api_router
 
 
 from contextlib import asynccontextmanager

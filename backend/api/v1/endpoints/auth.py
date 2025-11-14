@@ -2,17 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, status, Security
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
-from backend.models.roles import UserRole
-from backend.core.database import get_db
-from backend.core.security import hash_password, verify_password, create_access_token
-from backend.models.user import User
-from backend.schemas.user import UserRegisterWithRole, Token
+from models.roles import UserRole
+from core.database import get_db
+from core.security import hash_password, verify_password, create_access_token
+from models.user import User
+from schemas.user import UserRegisterWithRole, Token
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def get_current_admin_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    from backend.core.security import verify_access_token
+    from core.security import verify_access_token
     payload = verify_access_token(token)
     email = payload.get("sub")
     role = payload.get("role")
@@ -28,10 +28,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from backend.core.database import get_db
-from backend.core.security import hash_password, verify_password, create_access_token
-from backend.models.user import User
-from backend.schemas.user import UserRegisterWithRole, Token
+from core.database import get_db
+from core.security import hash_password, verify_password, create_access_token
+from models.user import User
+from schemas.user import UserRegisterWithRole, Token
 
 router = APIRouter()
 

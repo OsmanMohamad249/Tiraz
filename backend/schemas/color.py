@@ -5,7 +5,7 @@ Pydantic schemas for Color operations.
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, Field
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 
 
 class ColorCreate(BaseModel):
@@ -31,4 +31,5 @@ class ColorResponse(BaseModel):
     name: str
     hex_code: str
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True

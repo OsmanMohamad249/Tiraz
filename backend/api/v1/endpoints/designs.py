@@ -6,13 +6,13 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from backend.core.database import get_db
-from backend.core.deps import get_current_user, get_current_designer_user
-from backend.models.design import Design
-from backend.models.category import Category
-from backend.models.user import User
-from backend.schemas.design import DesignCreate, DesignUpdate, DesignResponse
-from backend.crud.design import (
+from core.database import get_db
+from core.deps import get_current_user, get_current_designer_user
+from models.design import Design
+from models.category import Category
+from models.user import User
+from schemas.design import DesignCreate, DesignUpdate, DesignResponse
+from crud.design import (
     get_designs,
     get_design,
     create_design,

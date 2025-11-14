@@ -3,7 +3,7 @@ Pytest configuration for backend tests.
 """
 import pytest
 from fastapi.testclient import TestClient
-from backend.main import app as main_app
+from main import app as main_app
 import os
 from dotenv import load_dotenv
 
@@ -49,8 +49,8 @@ def app():
     # Create a new FastAPI app for testing without rate limiting
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
-    from backend.core.config import settings
-    from backend.api.v1.api import api_router
+    from core.config import settings
+    from api.v1.api import api_router
 
     test_app = FastAPI(title="Qeyafa Backend (Test)")
 
@@ -102,16 +102,16 @@ def setup_database():
     """
     Setup database for tests.
     """
-    from backend.core.database import Base, engine
-    from backend.core.config import settings
+    from core.database import Base, engine
+    from core.config import settings
 
     # Create all tables
     Base.metadata.create_all(bind=engine)
 
     # Create test admin user
-    from backend.core.security import hash_password
-    from backend.models.user import User
-    from backend.models.roles import UserRole
+    from core.security import hash_password
+    from models.user import User
+    from models.roles import UserRole
     from sqlalchemy.orm import Session
 
     db = Session(engine)

@@ -10,7 +10,7 @@ import io
 
 
 from fastapi.testclient import TestClient
-from backend.main import app
+from main import app
 import redis.asyncio as redis
 from fastapi_limiter import FastAPILimiter
 import asyncio

@@ -5,7 +5,7 @@ Pydantic schemas for Fabric operations.
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, Field
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 
 
 class FabricCreate(BaseModel):
@@ -35,4 +35,5 @@ class FabricResponse(BaseModel):
     image_url: Optional[str] = None
     base_price: float
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True

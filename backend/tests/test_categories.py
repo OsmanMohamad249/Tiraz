@@ -9,8 +9,8 @@ Run with: pytest tests/test_categories.py
 
 
 from fastapi.testclient import TestClient
-from backend.main import app
-from backend.models.roles import UserRole
+from main import app
+from models.roles import UserRole
 import redis.asyncio as redis
 from fastapi_limiter import FastAPILimiter
 import asyncio

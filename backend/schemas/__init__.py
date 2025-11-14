@@ -2,11 +2,11 @@
 Schemas package.
 """
 
-from backend.schemas.user import UserRegister, UserLogin, Token, UserResponse
-from backend.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
-from backend.schemas.design import DesignCreate, DesignUpdate, DesignResponse
-from backend.schemas.fabric import FabricCreate, FabricUpdate, FabricResponse
-from backend.schemas.color import ColorCreate, ColorUpdate, ColorResponse
+from schemas.user import UserRegister, UserLogin, Token, UserResponse
+from schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
+from schemas.design import DesignCreate, DesignUpdate, DesignResponse
+from schemas.fabric import FabricCreate, FabricUpdate, FabricResponse
+from schemas.color import ColorCreate, ColorUpdate, ColorResponse
 
 __all__ = [
     "UserRegister",

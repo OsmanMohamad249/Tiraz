@@ -12,9 +12,10 @@ Run with: pytest tests/test_auth.py
 
 import pytest
 from fastapi.testclient import TestClient
-from backend.main import app
 import os
-from backend.models.roles import UserRole
+from main import app
+from models.roles import UserRole
+
 
 @pytest.fixture(scope="function", autouse=True)
 def disable_rate_limiter(monkeypatch):

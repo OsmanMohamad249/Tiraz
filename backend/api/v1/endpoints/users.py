@@ -5,12 +5,12 @@ User endpoints.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.core.database import get_db
-from backend.core.deps import get_current_user
-from backend.core.security import get_password_hash
-from backend.models.user import User
-from backend.models.roles import UserRole
-from backend.schemas.user import UserResponse, UserRegister
+from core.database import get_db
+from core.deps import get_current_user
+from core.security import get_password_hash
+from models.user import User
+from models.roles import UserRole
+from schemas.user import UserResponse, UserRegister
 
 router = APIRouter()
 

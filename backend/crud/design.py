@@ -6,10 +6,10 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from backend.models.design import Design
-from backend.models.fabric import Fabric
-from backend.models.color import Color
-from backend.schemas.design import DesignCreate, DesignUpdate
+from models.design import Design
+from models.fabric import Fabric
+from models.color import Color
+from schemas.design import DesignCreate, DesignUpdate
 
 
 def get_design(db: Session, design_id: UUID) -> Optional[Design]:

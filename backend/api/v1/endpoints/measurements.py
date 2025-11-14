@@ -8,15 +8,19 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, s
 from sqlalchemy.orm import Session
 import aiofiles
 
-from backend.core.database import get_db
-from backend.core.deps import get_current_user
-from backend.models.user import User
-from backend.models.measurement import Measurement
-from backend.schemas.measurement import (
+from core.database import get_db
+from core.deps import get_current_user
+from models.user import User
+from models.measurement import Measurement
+from schemas.measurement import (
     MeasurementProcessResponse,
     MeasurementUploadResponse,
+    MeasurementCreate,
+    MeasurementUpdate,
+    MeasurementResponse,
 )
-from backend.services.ai_client import ai_client, AIServiceError
+from crud import measurement as measurement_crud
+from services.ai_client import ai_client, AIServiceError
 
 router = APIRouter()
 
@@ -76,6 +80,97 @@ async def save_upload_file(file: UploadFile, user_id: uuid.UUID) -> str:
     await file.seek(0)
 
     return f"{user_id}/{unique_filename}"
+
+
+# CRUD endpoints for manual measurements
+
+
+@router.post("/", response_model=MeasurementResponse, status_code=status.HTTP_201_CREATED)
+def create_measurement_endpoint(
+    payload: MeasurementCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Create a manual measurement record for the authenticated user."""
+    db_measurement = measurement_crud.create_measurement(db, current_user.id, payload)
+    return db_measurement
+
+
+@router.get("/", response_model=list[MeasurementResponse])
+def list_measurements_for_user(
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """List measurements belonging to the authenticated user."""
+    measurements = measurement_crud.get_measurements_for_user(db, current_user.id, skip, limit)
+    return measurements
+
+
+@router.get("/{measurement_id}", response_model=MeasurementResponse)
+def get_measurement_endpoint(
+    measurement_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get a specific measurement; ensure ownership."""
+    measurement = measurement_crud.get_measurement(db, measurement_id)
+    if measurement is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Measurement not found")
+    if measurement.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this measurement")
+    return measurement
+
+
+@router.put("/{measurement_id}", response_model=MeasurementResponse)
+def update_measurement_endpoint(
+    measurement_id: uuid.UUID,
+    payload: MeasurementUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update a measurement (only owner)."""
+    measurement = measurement_crud.get_measurement(db, measurement_id)
+    if measurement is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Measurement not found")
+    if measurement.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this measurement")
+
+    updated = measurement_crud.update_measurement(db, measurement_id, payload)
+    return updated
+
+
+@router.delete("/{measurement_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_measurement_endpoint(
+    measurement_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Delete a measurement (only owner)."""
+    measurement = measurement_crud.get_measurement(db, measurement_id)
+    if measurement is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Measurement not found")
+    if measurement.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this measurement")
+
+    success = measurement_crud.delete_measurement(db, measurement_id)
+    if not success:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete measurement")
+
+
+@router.post("/upload-image", response_model=MeasurementUploadResponse)
+async def upload_single_image(
+    file: UploadFile = File(...), current_user: User = Depends(get_current_user)
+):
+    """Upload a single image for later association with a measurement."""
+    validate_file(file)
+    try:
+        path = await save_upload_file(file, current_user.id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to save file: {str(e)}")
+
+    return MeasurementUploadResponse(message="Image uploaded successfully", image_paths={"image": path})
 
 
 @router.post("/upload", response_model=MeasurementUploadResponse)

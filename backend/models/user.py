@@ -8,8 +8,8 @@ from sqlalchemy import Boolean, Column, DateTime, String, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
-from backend.core.database import Base
-from backend.models.roles import UserRole
+from core.database import Base
+from models.roles import UserRole
 
 
 class User(Base):

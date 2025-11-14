@@ -7,10 +7,10 @@ from fastapi.testclient import TestClient
 
 # Ensure settings read env vars
 # DATABASE_URL and SECRET_KEY must be set in environment
-from backend.main import app
+from main import app
 
-from backend.core.database import SessionLocal
-from backend.models.user import User
+from core.database import SessionLocal
+from models.user import User
 
 client = TestClient(app)
 

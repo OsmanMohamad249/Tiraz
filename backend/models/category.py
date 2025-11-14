@@ -8,7 +8,7 @@ from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
-from backend.core.database import Base
+from core.database import Base
 
 
 class Category(Base):

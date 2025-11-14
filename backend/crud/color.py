@@ -6,8 +6,8 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from backend.models.color import Color
-from backend.schemas.color import ColorCreate, ColorUpdate
+from models.color import Color
+from schemas.color import ColorCreate, ColorUpdate
 
 
 def get_color(db: Session, color_id: UUID) -> Optional[Color]:

@@ -7,7 +7,7 @@ Run with: pytest tests/test_admin_endpoints.py
 
 import pytest
 from fastapi.testclient import TestClient
-from backend.main import app
+from main import app
 import time
 
 

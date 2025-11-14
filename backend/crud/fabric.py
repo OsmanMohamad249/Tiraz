@@ -6,8 +6,8 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from backend.models.fabric import Fabric
-from backend.schemas.fabric import FabricCreate, FabricUpdate
+from models.fabric import Fabric
+from schemas.fabric import FabricCreate, FabricUpdate
 
 
 def get_fabric(db: Session, fabric_id: UUID) -> Optional[Fabric]:

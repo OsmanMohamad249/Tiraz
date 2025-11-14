@@ -7,7 +7,7 @@ import uuid
 from sqlalchemy import Column, Float, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from backend.core.database import Base
+from core.database import Base
 
 
 class Fabric(Base):

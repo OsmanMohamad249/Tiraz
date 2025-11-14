@@ -3,10 +3,11 @@ Measurement schemas for API request/response validation.
 """
 
 from pydantic import BaseModel, Field
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from typing import Dict
 from datetime import datetime
 import uuid
+from typing import Optional
 
 
 class MeasurementResult(BaseModel):
@@ -43,7 +44,8 @@ class MeasurementProcessResponse(BaseModel):
     confidence_score: float
     processed_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
 
 class MeasurementResponse(BaseModel):
@@ -56,4 +58,21 @@ class MeasurementResponse(BaseModel):
     processed_at: datetime
     confidence_score: float
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
+
+
+class MeasurementCreate(BaseModel):
+    """Schema for creating a measurement record (manual entry)."""
+
+    measurements: Dict[str, float] = Field(..., description="Map of measurement name to value in cm")
+    image_paths: Optional[Dict[str, str]] = Field(None, description="Optional paths to related images")
+    confidence_score: Optional[float] = Field(None, description="Optional confidence score")
+
+
+class MeasurementUpdate(BaseModel):
+    """Schema for updating a measurement record."""
+
+    measurements: Optional[Dict[str, float]] = Field(None, description="Updated measurements map")
+    image_paths: Optional[Dict[str, str]] = Field(None, description="Updated image paths")
+    confidence_score: Optional[float] = Field(None, description="Updated confidence score")
