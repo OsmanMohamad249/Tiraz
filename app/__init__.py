@@ -32,8 +32,10 @@ def create_app(config_name='development'):
     from app import commands
     commands.register_commands(app)
     
-    # Create database tables
-    with app.app_context():
-        db.create_all()
+    # Create database tables in non-production environments only.
+    # Production schema changes must be applied via Alembic migrations.
+    if config_name != 'production':
+        with app.app_context():
+            db.create_all()
     
     return app
