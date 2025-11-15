@@ -37,7 +37,8 @@ async def process_measurements(
     photo_left: UploadFile = File(...),
     photo_right: UploadFile = File(...),
     height: float = Form(...),
-    weight: float = Form(...)
+    weight: float = Form(...),
+    force_error: str | None = Form(None),
 ):
     """
     Process body measurements from uploaded photos
@@ -51,6 +52,15 @@ async def process_measurements(
     - weight: number (kg)
     """
     try:
+        # Support a test-only form parameter `force_error` to force an error response from the AI.
+        # This is useful for CI to verify negative AI handling in the backend.
+        if force_error == 'raise':
+            raise HTTPException(status_code=500, detail='Forced AI processing error (raise)')
+        if force_error == 'error':
+            return {
+                'status': 'error',
+                'data': {}
+            }
         # Validate files are images
         allowed_types = ['image/jpeg', 'image/png', 'image/jpg']
         photos = [photo_front, photo_back, photo_left, photo_right]

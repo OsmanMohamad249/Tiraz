@@ -78,6 +78,54 @@ jobs:
           # ensure expected keys exist
           echo "$BODY" | jq -e '.measurements and .confidence_score' >/dev/null
 
+          # Extract measurement id for further integration checks
+          MEASUREMENT_ID=$(echo "$BODY" | jq -r .id)
+          echo "Created measurement id: $MEASUREMENT_ID"
+
+          # Update measurement (change chest measurement)
+          UPDATE_PAYLOAD='{"measurements": {"chest": 111.0, "waist": 80.0, "hip": 98.0}}'
+          UPD_RESP=$(curl -s -w "\n%{http_code}" -X PUT http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            -d "$UPDATE_PAYLOAD")
+          UPD_STATUS=$(tail -n1 <<< "$UPD_RESP")
+          UPD_BODY=$(sed '$d' <<< "$UPD_RESP")
+          echo "Update HTTP status: $UPD_STATUS"
+          echo "$UPD_BODY" | jq -C . || true
+          if [ "$UPD_STATUS" != "200" ]; then
+            echo "Failed to update measurement"; exit 1
+          fi
+          echo "$UPD_BODY" | jq -e '.measurements.chest == 111.0' >/dev/null
+
+          # Delete measurement
+          DEL_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN")
+          echo "Delete HTTP status: $DEL_STATUS"
+          if [ "$DEL_STATUS" != "204" ]; then
+            echo "Failed to delete measurement"; exit 1
+          fi
+
+          # Confirm deletion: GET should return 404
+          GET_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN")
+          echo "Get after delete HTTP status: $GET_STATUS"
+          if [ "$GET_STATUS" != "404" ]; then
+            echo "Measurement still exists after delete"; exit 1
+          fi
+
+          # Negative AI response: force AI service to return unsuccessful status
+          NEG_RESP=$(curl -s -w "\n%{http_code}" -X POST http://localhost:8000/api/v1/measurements/process \
+            -H "Authorization: Bearer $TOKEN" \
+            -F "photo_front=@front.png" -F "photo_back=@back.png" -F "photo_left=@left.png" -F "photo_right=@right.png" \
+            -F "height=170" -F "weight=70" -F "force_error=error")
+          NEG_STATUS=$(tail -n1 <<< "$NEG_RESP")
+          NEG_BODY=$(sed '$d' <<< "$NEG_RESP")
+          echo "Negative AI HTTP status: $NEG_STATUS"
+          echo "$NEG_BODY" | jq -C . || true
+          # Expect backend to respond with 500 when AI returns unsuccessful status
+          if [ "$NEG_STATUS" != "500" ]; then
+            echo "Negative AI scenario did not return expected 500"; exit 1
+          fi
+
       - name: Verify DB persistence (query from backend)
         run: |
           set -euo pipefail
