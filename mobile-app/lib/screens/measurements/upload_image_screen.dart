@@ -31,7 +31,6 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
       final resp = await _service.uploadImage(_file!);
       final status = resp.statusCode;
       if (!mounted) return;
-      final body = await resp.stream.bytesToString();
       if (status == 200) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload successful')));
         Navigator.of(context).pop(true);
@@ -40,7 +39,6 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      final body = await resp.stream.bytesToString();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       setState(() => _loading = false);
