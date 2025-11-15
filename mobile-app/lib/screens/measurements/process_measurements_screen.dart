@@ -55,6 +55,7 @@ class _ProcessMeasurementsScreenState extends State<ProcessMeasurementsScreen> {
       final resp = await _service.processMeasurements(photos, height, weight);
       final status = resp.statusCode;
       final body = await resp.stream.bytesToString();
+      if (!mounted) return;
 
       if (status == 200) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Processing successful')));
@@ -96,6 +97,7 @@ class _ProcessMeasurementsScreenState extends State<ProcessMeasurementsScreen> {
             ),
           );
 
+          if (!mounted) return;
           Navigator.of(context).pop(true);
         } catch (e) {
           // JSON parse error — show raw body with retry option
