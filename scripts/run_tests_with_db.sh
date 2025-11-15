@@ -121,6 +121,16 @@ echo "Running pytest (this may take a while)"
 export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${HOST_PORT}/${POSTGRES_DB}"
 export POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB
 
+# Ensure SECRET_KEY is present and sufficiently strong for app startup
+if [ -z "${SECRET_KEY:-}" ] || [ ${#SECRET_KEY} -lt 32 ]; then
+  echo "Generating a strong SECRET_KEY for test run"
+  SECRET_KEY=$(python - <<'PY'
+import secrets
+print(secrets.token_urlsafe(48))
+PY
+)
+  export SECRET_KEY
+fi
 # Run tests (adjust pytest args as needed)
 PYTHONPATH=backend pytest -q "$@"
 
