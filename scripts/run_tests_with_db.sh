@@ -148,27 +148,8 @@ fi
 
 # If the tests .env file exists, ensure it contains the SECRET_KEY value we will use
 if [ -f "$ENV_FILE" ]; then
-  echo "Backing up original $ENV_FILE to ${ENV_FILE}.bak and writing SECRET_KEY"
-  cp "$ENV_FILE" "${ENV_FILE}.bak"
-  # Write out new .env.test with same content but replace or append SECRET_KEY
-  # Use Python to safely replace or append SECRET_KEY to avoid shell escaping issues
-  python - <<PY > "$ENV_FILE"
-import io,sys
-src_path = "${ENV_FILE}.bak"
-key = "${SECRET_KEY}"
-out = []
-with open(src_path, 'r', encoding='utf-8') as fh:
-    found = False
-    for line in fh:
-        if line.strip().startswith('SECRET_KEY='):
-            out.append(f'SECRET_KEY={key}\n')
-            found = True
-        else:
-            out.append(line)
-    if not found:
-        out.append(f'SECRET_KEY={key}\n')
-sys.stdout.write(''.join(out))
-PY
+  echo "Backing up (rename) original $ENV_FILE to ${ENV_FILE}.bak — tests will use exported env vars instead"
+  mv "$ENV_FILE" "${ENV_FILE}.bak"
 fi
 # Run tests (adjust pytest args as needed)
 PYTHONPATH=backend pytest -q "$@"
