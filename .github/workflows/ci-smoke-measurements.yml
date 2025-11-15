@@ -22,7 +22,7 @@ jobs:
 
       - name: Start Docker Compose services
         env:
-          SECRET_KEY: ci_strong_secret_key_2025_please_override
+          SECRET_KEY: ${{ secrets.CI_SECRET_KEY }}
         run: |
           export SECRET_KEY="$SECRET_KEY"
           docker compose up --build -d
