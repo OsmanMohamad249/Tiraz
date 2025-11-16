@@ -176,7 +176,8 @@ jobs:
             source .ci/.ci.env
             set +o allexport
           fi
-          docker compose exec -T backend env TEST_EMAIL="${TEST_EMAIL}" python /app/ci/check_db.py
+          # Run the checker with PYTHONPATH set and invoke as a module so imports succeed
+          docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
 
       - name: Tear down compose services
         if: always()
