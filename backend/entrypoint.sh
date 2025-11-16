@@ -10,7 +10,7 @@ echo "PostgreSQL is ready!"
 
 # Run database migrations
 echo "Running database migrations..."
-alembic upgrade head
+alembic upgrade heads
 
 # Create test users if they don't exist
 echo "Creating test users (if needed)..."
