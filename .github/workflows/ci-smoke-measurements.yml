@@ -23,12 +23,18 @@ jobs:
       - name: Start Docker Compose services
         env:
           SECRET_KEY: ${{ secrets.CI_SECRET_KEY }}
-          AI_SERVICE_URL: ${{ secrets.AI_SERVICE_URL || 'http://ai-models:8000' }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER || 'qeyafa' }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'qeyafa_password' }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB || 'qeyafa_db' }}
+          AI_SERVICE_URL: ${{ secrets.AI_SERVICE_URL }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         run: |
           set -euo pipefail
+          # Provide sensible defaults for any empty secrets (shell-side)
+          : ${AI_SERVICE_URL:='http://ai-models:8000'}
+          : ${POSTGRES_USER:='qeyafa'}
+          : ${POSTGRES_PASSWORD:='qeyafa_password'}
+          : ${POSTGRES_DB:='qeyafa_db'}
+
           # Generate a CI-specific docker-compose file that mounts uploads to the runner
           cat > docker-compose.ci.yml <<'YAML'
           version: '3.8'
@@ -228,43 +234,13 @@ jobs:
           docker compose exec -T backend bash -lc 'python -m alembic upgrade head 2>&1 | tee /tmp/alembic_run.log || true' || true
           docker compose cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
 
-          echo "Running backend DB introspection to backend-db-conn-introspect.log..."
-          docker compose exec -T backend bash -lc "python - <<'PY' > /tmp/backend-db-conn-introspect.log 2>&1
-import os
-try:
-    import psycopg2
-    url = os.environ.get('DATABASE_URL')
-    print('DATABASE_URL:', url)
-    conn = psycopg2.connect(url)
-    cur = conn.cursor()
-    cur.execute('SELECT version();')
-    print('Postgres version:', cur.fetchone())
-    cur.close()
-    conn.close()
-    print('DB connection ok')
-except Exception as e:
-    print('DB introspect failed:', e)
-PY" || true
-          docker compose cp backend:/tmp/backend-db-conn-introspect.log "$ART_DIR/backend-db-conn-introspect.log" >/dev/null 2>&1 || true
+            echo "Running Postgres version check into postgres_version.txt (via postgres container)..."
+            docker compose exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
+            docker compose cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
 
-          echo "Dumping users (first 200 rows) to users-after-migrations.log..."
-          docker compose exec -T backend bash -lc "python - <<'PY' > /tmp/users-after-migrations.log 2>&1
-import os
-import psycopg2
-try:
-    url = os.environ.get('DATABASE_URL')
-    conn = psycopg2.connect(url)
-    cur = conn.cursor()
-    cur.execute(\"SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200;\")
-    rows = cur.fetchall()
-    for r in rows:
-        print(','.join([str(x) for x in r]))
-    cur.close()
-    conn.close()
-except Exception as e:
-    print('Failed to query users:', e)
-PY" || true
-          docker compose cp backend:/tmp/users-after-migrations.log "$ART_DIR/users-after-migrations.log" >/dev/null 2>&1 || true
+            echo "Dumping users (first 200 rows) to users-after-migrations.csv via postgres container..."
+            docker compose exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
+            docker compose cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
 
           echo "Ensuring tester.log exists (best-effort)..."
           if [ -f tester.log ]; then
