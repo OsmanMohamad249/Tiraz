@@ -104,7 +104,7 @@ If any of these sections look incomplete or you want more detail about any area 
        - `docker compose exec -T backend bash -lc 'cp /app/backend/alembic.log /tmp/alembic.log || true'`
        - ثم `docker compose cp backend:/tmp/alembic.log ./alembic.log || true`
     3. اجمع مجلدات التحميلات/النسخ التي تحتاجها (مثل `backend/uploads`):
-       - إن كان `upload-data` مرفقاً كمجلد Host (مثل `./backend/uploads`), تأكد من نسخه: `tar -czf ci-uploads.tar.gz backend/uploads || true`.
+       - إن كان `upload-data` مرفقاً كمجلد Host (مثل `./backend/uploads`)، تأكد من نسخه: `tar -czf ci-uploads.tar.gz backend/uploads || true`.
        - وإلا استخدم `docker compose cp backend:/app/uploads ./ci-uploads || true`.
     4. أنشئ tar شامل للـ artifacts:
        - `tar -czf ci-logs.tar.gz backend.logs.txt ai-models.logs.txt postgres.logs.txt alembic.log ci-uploads.tar.gz || true`
@@ -112,7 +112,7 @@ If any of these sections look incomplete or you want more detail about any area 
 
   - نقاط تحقق للتأكد من أن الملفات مشمولة:
     - تأكد أن الحاوية تكتب فعلاً إلى المسارات التي تجمعها (راجع `UPLOAD_DIR` في `backend/api/v1/endpoints/measurements.py` — القيمة الافتراضية هي `/workspaces/Qeyafa/backend/uploads`).
-    - إذا كان `docker-compose.yml` يستخدم حجمًا مملوكًا باسم (`upload-data`) وليس مساراً على المضيف (`./backend/uploads`), فاستخدم `docker compose cp` أو ربط الحجم إلى مسار مضيف أثناء تشغيل CI.
+    - إذا كان `docker-compose.yml` يستخدم حجمًا مملوكًا باسم (`upload-data`) وليس مساراً على المضيف (`./backend/uploads`)، فاستخدم `docker compose cp` أو ربط الحجم إلى مسار مضيف أثناء تشغيل CI.
 
 **هيكلة مشروع Backend و Database (موجز عربي)**
 
