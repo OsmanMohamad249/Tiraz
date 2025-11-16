@@ -1,0 +1,171 @@
+name: CI Smoke E2E - Measurements (manual dispatch)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  smoke-e2e-measurements:
+    name: Smoke E2E - /api/v1/measurements/process
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (jq)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq curl
+
+      - name: Start Docker Compose services
+        env:
+          SECRET_KEY: ${{ secrets.CI_SECRET_KEY }}
+        run: |
+          mkdir -p .ci
+          echo "SECRET_KEY=$SECRET_KEY" > .ci/.ci.env
+          docker compose --env-file .ci/.ci.env up --build -d
+
+      - name: Capture initial backend logs (debug)
+        if: always()
+        run: |
+          mkdir -p .ci/logs
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps backend --tail 200 > .ci/logs/backend_initial.log || true
+
+      - name: Upload backend initial logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-backend-initial-logs
+          path: .ci/logs/backend_initial.log
+
+      - name: Wait for backend health
+        run: |
+          echo "Waiting for backend /health..."
+          for i in {1..40}; do
+            if curl -sS http://localhost:8000/health | grep -q '"status":"ok"'; then
+              echo "backend healthy"; break
+            fi
+            sleep 3
+          done
+          curl -sS http://localhost:8000/health
+
+      - name: Run measurements process smoke test
+        run: |
+          set -euo pipefail
+          TEST_EMAIL="ci_smoke+${GITHUB_RUN_ID}@example.com"
+          export TEST_EMAIL
+          echo "Using TEST_EMAIL=$TEST_EMAIL"
+          mkdir -p .ci
+          echo "TEST_EMAIL=${TEST_EMAIL}" >> .ci/.ci.env
+
+          IMG_B64='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
+          echo "$IMG_B64" | base64 -d > front.png
+          for f in back.png left.png right.png; do
+            cp front.png "$f"
+          done
+
+          curl -sS -X POST http://localhost:8000/api/v1/auth/register \
+            -H 'Content-Type: application/json' \
+            -d "{\"email\":\"${TEST_EMAIL}\",\"password\":\"password123\",\"first_name\":\"CI\",\"last_name\":\"Smoke\",\"role\":\"customer\"}" || true
+
+          sleep 2
+          TOKEN_RESPONSE=""
+          TOKEN=""
+          for i in 1 2 3 4 5; do
+            TOKEN_RESPONSE=$(curl -sS -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+              http://localhost:8000/api/v1/auth/login --data-urlencode "username=${TEST_EMAIL}" --data-urlencode "password=password123" || true)
+            TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token 2>/dev/null || echo "")
+            if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
+              echo "Login succeeded on attempt $i"
+              break
+            fi
+            echo "Login attempt $i failed — response: $TOKEN_RESPONSE"
+            sleep $((i))
+          done
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+            echo "Failed to login or obtain token; last response follows:"
+            echo "$TOKEN_RESPONSE"
+            mkdir -p .ci/logs
+            printf '%s' "$TOKEN_RESPONSE" > .ci/logs/login_failure_body.json
+            exit 1
+          fi
+
+          RESP=$(curl -s -w "\n%{http_code}" -X POST http://localhost:8000/api/v1/measurements/process \
+            -H "Authorization: Bearer $TOKEN" \
+            -F "photo_front=@front.png" -F "photo_back=@back.png" -F "photo_left=@left.png" -F "photo_right=@right.png" \
+            -F "height=170" -F "weight=70")
+
+          HTTP_STATUS=$(tail -n1 <<< "$RESP")
+          BODY=$(sed '$d' <<< "$RESP")
+          echo "HTTP status: $HTTP_STATUS"
+          echo "$BODY" | jq -C . || true
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Process endpoint did not return 200"; exit 1
+          fi
+          echo "$BODY" | jq -e '.measurements and .confidence_score' >/dev/null
+
+          MEASUREMENT_ID=$(echo "$BODY" | jq -r .id)
+          echo "Created measurement id: $MEASUREMENT_ID"
+
+          # Verify DB persistence immediately (run from backend container so imports resolve)
+          echo "Verifying measurement was persisted in DB (using backend container)"
+          docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
+
+          UPDATE_PAYLOAD='{"measurements": {"chest": 111.0, "waist": 80.0, "hip": 98.0}}'
+          UPD_RESP=$(curl -s -w "\n%{http_code}" -X PUT http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            -d "$UPDATE_PAYLOAD")
+          UPD_STATUS=$(tail -n1 <<< "$UPD_RESP")
+          UPD_BODY=$(sed '$d' <<< "$UPD_RESP")
+          echo "Update HTTP status: $UPD_STATUS"
+          echo "$UPD_BODY" | jq -C . || true
+          if [ "$UPD_STATUS" != "200" ]; then
+            echo "Failed to update measurement"; exit 1
+          fi
+          echo "$UPD_BODY" | jq -e '.measurements.chest == 111.0' >/dev/null
+
+          DEL_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN")
+          echo "Delete HTTP status: $DEL_STATUS"
+          if [ "$DEL_STATUS" != "204" ]; then
+            echo "Failed to delete measurement"; exit 1
+          fi
+
+          GET_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
+            -H "Authorization: Bearer $TOKEN")
+          echo "Get after delete HTTP status: $GET_STATUS"
+          if [ "$GET_STATUS" != "404" ]; then
+            echo "Measurement still exists after delete"; exit 1
+          fi
+
+          NEG_RESP=$(curl -s -w "\n%{http_code}" -X POST http://localhost:8000/api/v1/measurements/process \
+            -H "Authorization: Bearer $TOKEN" \
+            -F "photo_front=@front.png" -F "photo_back=@back.png" -F "photo_left=@left.png" -F "photo_right=@right.png" \
+            -F "height=170" -F "weight=70" -F "force_error=error")
+          NEG_STATUS=$(tail -n1 <<< "$NEG_RESP")
+          NEG_BODY=$(sed '$d' <<< "$NEG_RESP")
+          echo "Negative AI HTTP status: $NEG_STATUS"
+          echo "$NEG_BODY" | jq -C . || true
+          if [ "$NEG_STATUS" != "500" ]; then
+            echo "Negative AI scenario did not return expected 500"; exit 1
+          fi
+
+      - name: Tear down compose services
+        if: always()
+        run: |
+          mkdir -p .ci/logs
+          if [ -f .ci/.ci.env ]; then
+            docker compose --env-file .ci/.ci.env logs --no-color --timestamps backend --tail 500 > .ci/logs/backend_before_down.log || true
+            docker compose --env-file .ci/.ci.env down -v
+          else
+            docker compose logs --no-color --timestamps backend --tail 500 > .ci/logs/backend_before_down.log || true
+            docker compose down -v
+          fi
+
+      - name: Upload backend logs before down
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-backend-before-down-logs
+          path: .ci/logs/backend_before_down.log
