@@ -112,7 +112,7 @@ jobs:
 
           # Verify DB persistence immediately (run from backend container so imports resolve)
           echo "Verifying measurement was persisted in DB (using backend container)"
-          docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
+          docker compose --env-file .ci/.ci.env exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
 
           UPDATE_PAYLOAD='{"measurements": {"chest": 111.0, "waist": 80.0, "hip": 98.0}}'
           UPD_RESP=$(curl -s -w "\n%{http_code}" -X PUT http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
