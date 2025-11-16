@@ -1,0 +1,50 @@
+name: CI - Log Collector (manual)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  collect:
+    name: Collect CI logs & artifacts (best-effort)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Gather docker compose logs (best-effort)
+        run: |
+          set -euo pipefail || true
+          ART_DIR=ci-log-collector-artifacts
+          mkdir -p "$ART_DIR"
+
+          # Try to collect docker compose logs (ignore errors)
+          docker compose logs --no-color --timestamps > "$ART_DIR/compose.log" 2>&1 || true
+          docker compose logs --no-color --timestamps backend > "$ART_DIR/backend.log" 2>&1 || true
+          docker compose logs --no-color --timestamps ai-models > "$ART_DIR/ai-models.log" 2>&1 || true
+          docker compose logs --no-color --timestamps postgres > "$ART_DIR/postgres.log" 2>&1 || true
+
+          # Try to capture alembic logs if present inside backend container
+          docker compose exec -T backend bash -lc 'cp /app/alembic.log /tmp/alembic_run.log 2>/dev/null || true' || true
+          docker compose cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
+
+          # Try to copy uploads directory from the host or from the backend container
+          if [ -d ./backend/uploads ]; then
+            tar -czf "$ART_DIR/uploads.tgz" -C ./backend uploads || true
+          else
+            docker compose cp backend:/app/uploads "$ART_DIR/uploads" >/dev/null 2>&1 || true || true
+            if [ -d "$ART_DIR/uploads" ]; then
+              tar -czf "$ART_DIR/uploads.tgz" -C "$ART_DIR" uploads || true
+            fi
+          fi
+
+          # Diagnostics: ps / top from compose
+          docker compose ps -a > "$ART_DIR/ps.txt" 2>&1 || true
+          docker compose top > "$ART_DIR/top.txt" 2>&1 || true
+
+          # Package artifacts
+          tar -czf ci-logs.tar.gz -C "$ART_DIR" . || true
+      - name: Upload logs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs
+          path: ci-logs.tar.gz
