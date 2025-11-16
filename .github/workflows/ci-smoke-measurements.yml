@@ -176,7 +176,7 @@ jobs:
             source .ci/.ci.env
             set +o allexport
           fi
-          docker compose exec -T backend env TEST_EMAIL="${TEST_EMAIL}" python /workspaces/Qeyafa/backend/ci/check_db.py
+          docker compose exec -T backend env TEST_EMAIL="${TEST_EMAIL}" python /app/ci/check_db.py
 
       - name: Tear down compose services
         if: always()
