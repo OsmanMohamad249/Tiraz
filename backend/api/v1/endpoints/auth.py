@@ -7,6 +7,7 @@ from core.database import get_db
 from core.security import hash_password, verify_password, create_access_token
 from models.user import User
 from schemas.user import UserRegisterWithRole, Token
+from core.config import settings
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -86,7 +87,20 @@ def login(
     # Find user by email (using username field from OAuth2 form)
     user = db.query(User).filter(User.email == form_data.username).first()
 
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    # Debug logs: print whether user was found and active (only in DEBUG mode)
+    if settings.DEBUG:
+        if user:
+            print(f"[DEBUG] Login attempt for {form_data.username}: user found, is_active={user.is_active}, role={user.role}")
+        else:
+            print(f"[DEBUG] Login attempt for {form_data.username}: user not found")
+
+    password_ok = False
+    if user:
+        password_ok = verify_password(form_data.password, user.hashed_password)
+
+    if not user or not password_ok:
+        if settings.DEBUG:
+            print(f"[DEBUG] Login failed for {form_data.username}: password_ok={password_ok}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

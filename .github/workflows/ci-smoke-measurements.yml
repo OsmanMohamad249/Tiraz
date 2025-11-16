@@ -74,12 +74,28 @@ jobs:
             -H 'Content-Type: application/json' \
             -d "{\"email\":\"${TEST_EMAIL}\",\"password\":\"password123\",\"first_name\":\"CI\",\"last_name\":\"Smoke\",\"role\":\"customer\"}" || true
 
-          # login and obtain token
-          # small pause to ensure DB commit has settled, and send explicit form header
-          sleep 1
-          TOKEN=$(curl -sS -X POST -H "Content-Type: application/x-www-form-urlencoded" http://localhost:8000/api/v1/auth/login -d "username=${TEST_EMAIL}&password=password123" | jq -r .access_token)
+          # login with retries (keeps form-encoding). Sleep first to reduce race.
+          sleep 2
+          TOKEN_RESPONSE=""
+          TOKEN=""
+          for i in 1 2 3 4 5; do
+            TOKEN_RESPONSE=$(curl -sS -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+              http://localhost:8000/api/v1/auth/login -d "username=${TEST_EMAIL}&password=password123" || true)
+            TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token 2>/dev/null || echo "")
+            if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
+              echo "Login succeeded on attempt $i"
+              break
+            fi
+            echo "Login attempt $i failed — response: $TOKEN_RESPONSE"
+            sleep $((i))
+          done
+
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "Failed to login or obtain token"; exit 1
+            echo "Failed to login or obtain token; last response follows:" 
+            echo "$TOKEN_RESPONSE"
+            mkdir -p .ci/logs
+            printf '%s' "$TOKEN_RESPONSE" > .ci/logs/login_failure_body.json
+            exit 1
           fi
 
           # POST to /api/v1/measurements/process
