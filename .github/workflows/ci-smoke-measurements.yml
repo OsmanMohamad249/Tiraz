@@ -30,6 +30,19 @@ jobs:
           # Bring up with the env-file to ensure consistent interpolation
           docker compose --env-file .ci/.ci.env up --build -d
 
+      - name: Capture initial backend logs (debug)
+        if: always()
+        run: |
+          mkdir -p .ci/logs
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps backend --tail 200 > .ci/logs/backend_initial.log || true
+        # Upload the backend initial logs for debugging
+      - name: Upload backend initial logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-backend-initial-logs
+          path: .ci/logs/backend_initial.log
+
       - name: Wait for backend health
         run: |
           echo "Waiting for backend /health..."
@@ -138,9 +151,19 @@ jobs:
       - name: Tear down compose services
         if: always()
         run: |
-          # Use the same env-file used for `up` so compose interpolation won't fail
+          # Capture backend logs before tearing down
+          mkdir -p .ci/logs
           if [ -f .ci/.ci.env ]; then
+            docker compose --env-file .ci/.ci.env logs --no-color --timestamps backend --tail 500 > .ci/logs/backend_before_down.log || true
             docker compose --env-file .ci/.ci.env down -v
           else
+            docker compose logs --no-color --timestamps backend --tail 500 > .ci/logs/backend_before_down.log || true
             docker compose down -v
           fi
+
+      - name: Upload backend logs before down
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-backend-before-down-logs
+          path: .ci/logs/backend_before_down.log
