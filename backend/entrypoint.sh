@@ -3,14 +3,15 @@ set -e
 
 echo "Starting Qeyafa Backend..."
 
-# Wait for PostgreSQL to be ready (actual DB connection)
-echo "Waiting for PostgreSQL to be ready (SQLAlchemy check)..."
-python wait_for_db.py "$DATABASE_URL"
+# Wait for PostgreSQL to be ready
+echo "Waiting for PostgreSQL to be ready..."
+while ! nc -z postgres 5432; do
+  sleep 1
+done
 echo "PostgreSQL is ready!"
 
 # Run database migrations
 echo "Running database migrations..."
-# Use 'head' (singular) to avoid Alembic branching/heads issues introduced earlier
 alembic upgrade head
 
 # Create test users if they don't exist
