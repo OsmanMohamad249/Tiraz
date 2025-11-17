@@ -77,3 +77,7 @@ uploads/
 
 # Environment files with secrets
 backend/.env
+.github/workflows/ci-check-migrations.yml
+.github/workflows/ci-check-dependencies.yml
+.github/workflows/flutter-analyze-improved.yml
+.github/workflows/ci-backend-tests-improved.yml

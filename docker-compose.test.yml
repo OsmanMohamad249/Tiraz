@@ -10,12 +10,15 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test_user"]
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
       interval: 2s
       timeout: 2s
       retries: 30
+      start_period: 5s
     volumes:
       - postgres-test-data:/var/lib/postgresql/data
+    networks:
+      - test-network
 
   redis:
     image: redis:7
@@ -26,6 +29,45 @@ services:
       interval: 2s
       timeout: 2s
       retries: 30
+      start_period: 5s
+    networks:
+      - test-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://test_user:test_password@postgres:5432/test_db
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-test-secret-key}
+      PYTHONPATH: /app:/app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./app:/app/app
+    networks:
+      - test-network
+    command: >
+      /bin/bash -c "
+      echo '🔄 Running migrations...' &&
+      cd /app/backend &&
+      alembic upgrade head &&
+      echo '✅ Migrations completed' &&
+      echo '🚀 Starting backend server...' &&
+      cd /app &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
 
 volumes:
   postgres-test-data:
+
+networks:
+  test-network:
+    driver: bridge
