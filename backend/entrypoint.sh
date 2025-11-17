@@ -10,6 +10,7 @@ echo "PostgreSQL is ready!"
 
 # Run database migrations
 echo "Running database migrations..."
+# Use 'head' (singular) to avoid Alembic branching/heads issues introduced earlier
 alembic upgrade head
 
 # Create test users if they don't exist
