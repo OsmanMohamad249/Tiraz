@@ -21,30 +21,19 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y jq curl
 
-      - name: Start Docker Compose services
-        env:
-          SECRET_KEY: ${{ secrets.CI_SECRET_KEY }}
-          AI_SERVICE_URL: ${{ secrets.AI_SERVICE_URL }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      - name: Load CI Environment Variables
+        id: load_env
         run: |
-          set -euo pipefail
-          # Provide sensible defaults for any empty secrets (shell-side)
-          : ${AI_SERVICE_URL:='http://ai-models:8000'}
-          : ${POSTGRES_USER:='qeyafa'}
-          : ${POSTGRES_PASSWORD:='qeyafa_password'}
-          : ${POSTGRES_DB:='qeyafa_db'}
-
-          # If a CI env file exists, export its variables into the shell
+          # Load .ci/.ci.env content into a variable for use in docker-compose
           if [ -f .ci/.ci.env ]; then
-            echo "Sourcing .ci/.ci.env into the shell (allexport)..."
-            set -o allexport
-            # shellcheck disable=SC1091
-            . .ci/.ci.env || true
-            set +o allexport
+            ENV_VARS=$(cat .ci/.ci.env | xargs)
+          else
+            ENV_VARS=""
           fi
+          echo "ENV_VARS=$ENV_VARS" >> $GITHUB_OUTPUT
 
+      - name: Create docker-compose.ci.yml
+        run: |
           # Generate a CI-specific docker-compose file that mounts uploads to the runner
           cat > docker-compose.ci.yml <<'YAML'
           version: '3.8'
@@ -109,120 +98,22 @@ jobs:
             postgres-data:
           YAML
 
-          # Start services using the generated compose file
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml up --build -d
-
-          # Wait for backend health
-          echo "Waiting for backend /health..."
-          for i in {1..40}; do
-            if curl -sS http://localhost:8000/health | grep -q '"status":"ok"'; then
-              echo "backend healthy"; break
-            fi
-            sleep 3
-          done
-          curl -sS http://localhost:8000/health
-
-      - name: Wait for backend health
+      - name: Build and Run Services
         run: |
-          echo "Waiting for backend /health..."
-          for i in {1..40}; do
-            if curl -sS http://localhost:8000/health | grep -q '"status":"ok"'; then
-              echo "backend healthy"; break
-            fi
-            sleep 3
-          done
-          curl -sS http://localhost:8000/health
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml up --build -d
 
-      - name: Run measurements process smoke test
+      - name: Wait for Backend Service Health Check
+        uses: jakejarvis/wait-for-service-action@master
+        with:
+          service: backend
+          timeout: 120s
+          # The healthcheck is defined in backend/Dockerfile and docker-compose.ci.yml
+          # This action will wait for the service to report 'healthy'
+
+      - name: Run Smoke Tests
         run: |
-          set -euo pipefail
-          # make a unique test email per run
-          TEST_EMAIL="ci_smoke+${GITHUB_RUN_ID}@example.com"
-          export TEST_EMAIL
-          echo "Using TEST_EMAIL=$TEST_EMAIL"
-
-          # create tiny PNG (1x1 transparent) to POST
-          IMG_B64='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
-          echo "$IMG_B64" | base64 -d > front.png
-          # create the other images by copying front.png
-          for side in back left right; do
-            cp front.png "${side}.png"
-          done
-
-          # register (ignore error if already exists)
-          curl -sS -X POST http://localhost:8000/api/v1/auth/register \
-            -H 'Content-Type: application/json' \
-            -d "{\"email\":\"${TEST_EMAIL}\",\"password\":\"password123\",\"first_name\":\"CI\",\"last_name\":\"Smoke\",\"role\":\"customer\"}" || true
-
-          # login and obtain token
-          TOKEN=$(curl -sS -X POST http://localhost:8000/api/v1/auth/login -d "username=${TEST_EMAIL}&password=password123" | jq -r .access_token)
-          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "Failed to login or obtain token"; exit 1
-          fi
-
-          # POST to /api/v1/measurements/process
-          RESP=$(curl -s -w "\n%{http_code}" -X POST http://localhost:8000/api/v1/measurements/process \
-            -H "Authorization: Bearer $TOKEN" \
-            -F "photo_front=@front.png" -F "photo_back=@back.png" -F "photo_left=@left.png" -F "photo_right=@right.png" \
-            -F "height=170" -F "weight=70")
-
-          HTTP_STATUS=$(tail -n1 <<< "$RESP")
-          BODY=$(sed '$d' <<< "$RESP")
-          echo "HTTP status: $HTTP_STATUS"
-          echo "$BODY" | jq -C . || true
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "Process endpoint did not return 200"; exit 1
-          fi
-          # ensure expected keys exist
-          echo "$BODY" | jq -e '.measurements and .confidence_score' >/dev/null
-
-          # Extract measurement id for further integration checks
-          MEASUREMENT_ID=$(echo "$BODY" | jq -r .id)
-          echo "Created measurement id: $MEASUREMENT_ID"
-
-          # Update measurement (change chest measurement)
-          UPDATE_PAYLOAD='{"measurements": {"chest": 111.0, "waist": 80.0, "hip": 98.0}}'
-          UPD_RESP=$(curl -s -w "\n%{http_code}" -X PUT http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
-            -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
-            -d "$UPDATE_PAYLOAD")
-          UPD_STATUS=$(tail -n1 <<< "$UPD_RESP")
-          UPD_BODY=$(sed '$d' <<< "$UPD_RESP")
-          echo "Update HTTP status: $UPD_STATUS"
-          echo "$UPD_BODY" | jq -C . || true
-          if [ "$UPD_STATUS" != "200" ]; then
-            echo "Failed to update measurement"; exit 1
-          fi
-          echo "$UPD_BODY" | jq -e '.measurements.chest == 111.0' >/dev/null
-
-          # Delete measurement
-          DEL_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
-            -H "Authorization: Bearer $TOKEN")
-          echo "Delete HTTP status: $DEL_STATUS"
-          if [ "$DEL_STATUS" != "204" ]; then
-            echo "Failed to delete measurement"; exit 1
-          fi
-
-          # Confirm deletion: GET should return 404
-          GET_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
-            -H "Authorization: Bearer $TOKEN")
-          echo "Get after delete HTTP status: $GET_STATUS"
-          if [ "$GET_STATUS" != "404" ]; then
-            echo "Measurement still exists after delete"; exit 1
-          fi
-
-          # Negative AI response: force AI service to return unsuccessful status
-          NEG_RESP=$(curl -s -w "\n%{http_code}" -X POST http://localhost:8000/api/v1/measurements/process \
-            -H "Authorization: Bearer $TOKEN" \
-            -F "photo_front=@front.png" -F "photo_back=@back.png" -F "photo_left=@left.png" -F "photo_right=@right.png" \
-            -F "height=170" -F "weight=70" -F "force_error=error")
-          NEG_STATUS=$(tail -n1 <<< "$NEG_RESP")
-          NEG_BODY=$(sed '$d' <<< "$NEG_RESP")
-          echo "Negative AI HTTP status: $NEG_STATUS"
-          echo "$NEG_BODY" | jq -C . || true
-          # Expect backend to respond with 500 when AI returns unsuccessful status
-          if [ "$NEG_STATUS" != "500" ]; then
-            echo "Negative AI scenario did not return expected 500"; exit 1
-          fi
+          # Use the loaded environment variables for docker-compose exec
+          ${{ steps.load_env.outputs.ENV_VARS }} docker-compose -f docker-compose.ci.yml exec -T backend pytest tests/smoke_tests.py
 
       - name: Collect CI logs and artifacts
         if: always()
@@ -232,28 +123,28 @@ jobs:
           ART_DIR=ci-artifacts
           mkdir -p "$ART_DIR"
           echo "Collecting docker-compose logs..."
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps > "$ART_DIR/compose.log" || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps backend > "$ART_DIR/backend.log" || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps ai-models > "$ART_DIR/ai-models.log" || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps postgres > "$ART_DIR/postgres.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps > "$ART_DIR/compose.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps backend > "$ART_DIR/backend.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps ai-models > "$ART_DIR/ai-models.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml logs --no-color --timestamps postgres > "$ART_DIR/postgres.log" || true
 
           echo "Attempting to copy alembic logs from backend container or filesystem..."
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'cp /app/alembic.log /tmp/alembic_from_container.log 2>/dev/null || true' || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'cp /workspaces/Qeyafa/backend/alembic.log /tmp/alembic_from_container_fs.log 2>/dev/null || true' || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_from_container.log "$ART_DIR/alembic.log" >/dev/null 2>&1 || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_from_container_fs.log "$ART_DIR/alembic_from_fs.log" >/dev/null 2>&1 || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'cp /app/alembic.log /tmp/alembic_from_container.log 2>/dev/null || true' || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'cp /workspaces/Qeyafa/backend/alembic.log /tmp/alembic_from_container_fs.log 2>/dev/null || true' || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_from_container.log "$ART_DIR/alembic.log" >/dev/null 2>&1 || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_from_container_fs.log "$ART_DIR/alembic_from_fs.log" >/dev/null 2>&1 || true
 
           echo "Running alembic inside backend container to capture migration logs (idempotent)"
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'python -m alembic upgrade head 2>&1 | tee /tmp/alembic_run.log || true' || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'python -m alembic upgrade head 2>&1 | tee /tmp/alembic_run.log || true' || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
 
             echo "Running Postgres version check into postgres_version.txt (via postgres container)..."
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
+            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
+            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
 
             echo "Dumping users (first 200 rows) to users-after-migrations.csv via postgres container..."
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
+            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
+            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
 
           echo "Ensuring tester.log exists (best-effort)..."
           if [ -f tester.log ]; then
@@ -267,15 +158,15 @@ jobs:
           if [ -d ./backend/uploads ]; then
             tar -czf "$ART_DIR/uploads.tgz" -C ./backend uploads || true
           else
-            docker compose cp backend:/app/uploads "$ART_DIR/uploads" >/dev/null 2>&1 || true || true
+            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/app/uploads "$ART_DIR/uploads" >/dev/null 2>&1 || true || true
             if [ -d "$ART_DIR/uploads" ]; then
               tar -czf "$ART_DIR/uploads.tgz" -C "$ART_DIR" uploads || true
             fi
           fi
 
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'ls -la /tmp || true' > "$ART_DIR/backend_tmp_listing.log" || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T ai-models bash -lc 'ps aux || true' > "$ART_DIR/ai-models-process-listing.log" || true
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp ai-models:/tmp/ai-models.log "$ART_DIR/ai-models.tmp.log" >/dev/null 2>&1 || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'ls -la /tmp || true' > "$ART_DIR/backend_tmp_listing.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T ai-models bash -lc 'ps aux || true' > "$ART_DIR/ai-models-process-listing.log" || true
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp ai-models:/tmp/ai-models.log "$ART_DIR/ai-models.tmp.log" >/dev/null 2>&1 || true
 
           tar -czf ci-logs.tar.gz -C "$ART_DIR" . || true
         shell: bash
@@ -290,9 +181,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "Verifying measurement was persisted in DB (using backend container)"
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; python /workspaces/Qeyafa/backend/ci/check_db.py"
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; python /workspaces/Qeyafa/backend/ci/check_db.py"
 
       - name: Tear down compose services
         if: always()
         run: |
-          docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml down -v
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml down -v
