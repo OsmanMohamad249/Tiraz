@@ -121,6 +121,10 @@ jobs:
           MEASUREMENT_ID=$(echo "$BODY" | jq -r .id)
           echo "Created measurement id: $MEASUREMENT_ID"
 
+          # Verify DB persistence immediately (run from backend container so imports resolve)
+          echo "Verifying measurement was persisted in DB (using backend container)"
+          docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
+
           # Update measurement (change chest measurement)
           UPDATE_PAYLOAD='{"measurements": {"chest": 111.0, "waist": 80.0, "hip": 98.0}}'
           UPD_RESP=$(curl -s -w "\n%{http_code}" -X PUT http://localhost:8000/api/v1/measurements/${MEASUREMENT_ID} \
@@ -164,20 +168,6 @@ jobs:
           if [ "$NEG_STATUS" != "500" ]; then
             echo "Negative AI scenario did not return expected 500"; exit 1
           fi
-
-      - name: Verify DB persistence (query from backend)
-        run: |
-          set -euo pipefail
-          echo "Verifying measurement was persisted in DB (using backend container)"
-          # Load persisted env variables if present so TEST_EMAIL is available in this step
-          if [ -f .ci/.ci.env ]; then
-            set -o allexport
-            # shellcheck disable=SC1091
-            source .ci/.ci.env
-            set +o allexport
-          fi
-          # Run the checker with PYTHONPATH set and invoke as a module so imports succeed
-          docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; export PYTHONPATH=/app; python -m ci.check_db"
 
       - name: Tear down compose services
         if: always()
