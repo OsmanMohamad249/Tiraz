@@ -222,28 +222,28 @@ jobs:
           ART_DIR=ci-artifacts
           mkdir -p "$ART_DIR"
           echo "Collecting docker-compose logs..."
-          docker compose logs --no-color --timestamps > "$ART_DIR/compose.log" || true
-          docker compose logs --no-color --timestamps backend > "$ART_DIR/backend.log" || true
-          docker compose logs --no-color --timestamps ai-models > "$ART_DIR/ai-models.log" || true
-          docker compose logs --no-color --timestamps postgres > "$ART_DIR/postgres.log" || true
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps > "$ART_DIR/compose.log" || true
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps backend > "$ART_DIR/backend.log" || true
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps ai-models > "$ART_DIR/ai-models.log" || true
+          docker compose --env-file .ci/.ci.env logs --no-color --timestamps postgres > "$ART_DIR/postgres.log" || true
 
           echo "Attempting to copy alembic logs from backend container or filesystem..."
-          docker compose exec -T backend bash -lc 'cp /app/alembic.log /tmp/alembic_from_container.log 2>/dev/null || true' || true
-          docker compose exec -T backend bash -lc 'cp /workspaces/Qeyafa/backend/alembic.log /tmp/alembic_from_container_fs.log 2>/dev/null || true' || true
-          docker compose cp backend:/tmp/alembic_from_container.log "$ART_DIR/alembic.log" >/dev/null 2>&1 || true
-          docker compose cp backend:/tmp/alembic_from_container_fs.log "$ART_DIR/alembic_from_fs.log" >/dev/null 2>&1 || true
+          docker compose --env-file .ci/.ci.env exec -T backend bash -lc 'cp /app/alembic.log /tmp/alembic_from_container.log 2>/dev/null || true' || true
+          docker compose --env-file .ci/.ci.env exec -T backend bash -lc 'cp /workspaces/Qeyafa/backend/alembic.log /tmp/alembic_from_container_fs.log 2>/dev/null || true' || true
+          docker compose --env-file .ci/.ci.env cp backend:/tmp/alembic_from_container.log "$ART_DIR/alembic.log" >/dev/null 2>&1 || true
+          docker compose --env-file .ci/.ci.env cp backend:/tmp/alembic_from_container_fs.log "$ART_DIR/alembic_from_fs.log" >/dev/null 2>&1 || true
 
           echo "Running alembic inside backend container to capture migration logs (idempotent)"
-          docker compose exec -T backend bash -lc 'python -m alembic upgrade head 2>&1 | tee /tmp/alembic_run.log || true' || true
-          docker compose cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
+          docker compose --env-file .ci/.ci.env exec -T backend bash -lc 'python -m alembic upgrade head 2>&1 | tee /tmp/alembic_run.log || true' || true
+          docker compose --env-file .ci/.ci.env cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
 
             echo "Running Postgres version check into postgres_version.txt (via postgres container)..."
-            docker compose exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
-            docker compose cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
+            docker compose --env-file .ci/.ci.env exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
+            docker compose --env-file .ci/.ci.env cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
 
             echo "Dumping users (first 200 rows) to users-after-migrations.csv via postgres container..."
-            docker compose exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
-            docker compose cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
+            docker compose --env-file .ci/.ci.env exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
+            docker compose --env-file .ci/.ci.env cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
 
           echo "Ensuring tester.log exists (best-effort)..."
           if [ -f tester.log ]; then
@@ -263,9 +263,9 @@ jobs:
             fi
           fi
 
-          docker compose exec -T backend bash -lc 'ls -la /tmp || true' > "$ART_DIR/backend_tmp_listing.log" || true
-          docker compose exec -T ai-models bash -lc 'ps aux || true' > "$ART_DIR/ai-models-process-listing.log" || true
-          docker compose cp ai-models:/tmp/ai-models.log "$ART_DIR/ai-models.tmp.log" >/dev/null 2>&1 || true
+          docker compose --env-file .ci/.ci.env exec -T backend bash -lc 'ls -la /tmp || true' > "$ART_DIR/backend_tmp_listing.log" || true
+          docker compose --env-file .ci/.ci.env exec -T ai-models bash -lc 'ps aux || true' > "$ART_DIR/ai-models-process-listing.log" || true
+          docker compose --env-file .ci/.ci.env cp ai-models:/tmp/ai-models.log "$ART_DIR/ai-models.tmp.log" >/dev/null 2>&1 || true
 
           tar -czf ci-logs.tar.gz -C "$ART_DIR" . || true
         shell: bash
