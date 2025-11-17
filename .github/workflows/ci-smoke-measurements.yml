@@ -248,11 +248,11 @@ jobs:
           docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp backend:/tmp/alembic_run.log "$ART_DIR/alembic_run.log" >/dev/null 2>&1 || true
 
             echo "Running Postgres version check into postgres_version.txt (via postgres container)..."
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
+            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"SELECT version();\" > /tmp/postgres_version.txt 2>&1 || true" || true
             docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/postgres_version.txt "$ART_DIR/postgres_version.txt" >/dev/null 2>&1 || true
 
             echo "Dumping users (first 200 rows) to users-after-migrations.csv via postgres container..."
-            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
+            docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T postgres bash -lc "psql -U \${POSTGRES_USER} -d \${POSTGRES_DB} -c \"COPY (SELECT id, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200) TO STDOUT WITH CSV HEADER\" > /tmp/users-after-migrations.csv 2>&1 || true" || true
             docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml cp postgres:/tmp/users-after-migrations.csv "$ART_DIR/users-after-migrations.csv" >/dev/null 2>&1 || true
 
           echo "Ensuring tester.log exists (best-effort)..."
