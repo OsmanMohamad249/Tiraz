@@ -5,5 +5,4 @@ linter:
     # Disable rules that cause too many warnings/info issues
     prefer_const_constructors: false
     unnecessary_brace_in_string_interps: false
-    unused_import: false
 
