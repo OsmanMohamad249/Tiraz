@@ -28,6 +28,8 @@ jobs:
           echo "Using generated SECRET_KEY for CI"
           # Persist secret to an env-file so docker compose interpolation works reliably
           echo "SECRET_KEY=$SECRET_KEY" > .ci.env
+          # Export SECRET_KEY to GITHUB_ENV for use in subsequent steps (for pydantic validation)
+          echo "SECRET_KEY=$SECRET_KEY" >> $GITHUB_ENV
           cat > docker-compose.ci.yml <<'YAML'
           version: "3.8"
           services:
