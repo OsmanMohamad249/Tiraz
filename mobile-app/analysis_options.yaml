@@ -29,11 +29,18 @@ linter:
     avoid_print: false
     use_key_in_widget_constructors: false
     
+    # Additional relaxed rules for better developer experience
+    prefer_final_fields: false
+    prefer_single_quotes: false
+    sort_child_properties_last: false
+    
     # Keep important rules enabled
     avoid_returning_null_for_void: true
     avoid_unnecessary_containers: true
     prefer_is_empty: true
     prefer_is_not_empty: true
+    avoid_relative_lib_imports: true
+    always_use_package_imports: true
 
 analyzer:
   exclude:
@@ -48,6 +55,10 @@ analyzer:
   errors:
     # Treat certain warnings as info to reduce noise
     invalid_annotation_target: ignore
+    # Don't fail on todos
+    todo: ignore
+    # Don't fail on deprecated member use from same package
+    deprecated_member_use_from_same_package: ignore
     
   language:
     strict-casts: false
