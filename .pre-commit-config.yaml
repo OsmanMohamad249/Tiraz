@@ -1,0 +1,78 @@
+# Pre-commit hooks configuration
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        name: Format Python code with Black
+        files: ^backend/
+        exclude: ^backend/alembic/versions/
+
+  # Python import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: Sort Python imports
+        files: ^backend/
+        exclude: ^backend/alembic/versions/
+        args: ["--profile", "black"]
+
+  # Python linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        name: Lint Python code with Flake8
+        files: ^backend/
+        exclude: ^backend/alembic/versions/
+        args: ["--max-line-length=100", "--ignore=E203,W503"]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+
+  # Local custom hooks
+  - repo: local
+    hooks:
+      - id: check-migrations
+        name: Check Migration Chain Integrity
+        entry: python backend/scripts/check_migrations.py
+        language: system
+        pass_filenames: false
+        files: ^backend/alembic/versions/.*\.py$
+
+      - id: check-dependencies
+        name: Check Python Dependencies
+        entry: python backend/scripts/check_dependencies.py
+        language: system
+        pass_filenames: false
+        files: ^backend/(requirements\.txt|pyproject\.toml)$
+
+      - id: flutter-analyze
+        name: Flutter Analyze
+        entry: bash -c 'cd mobile-app && flutter analyze --no-fatal-infos --no-fatal-warnings'
+        language: system
+        pass_filenames: false
+        files: ^mobile-app/lib/.*\.dart$
+        exclude: ^mobile-app/lib/.*\.(g|freezed|gr|config)\.dart$
