@@ -71,7 +71,7 @@ services:
     working_dir: /app
     command: /bin/bash -lc "PYTHONPATH=/app:/app/backend pytest backend/tests/test_templates.py -q -k template_crud_flow"
                  YAML
-          cat > docker-compose.ci.yml <<'YAML'
+                 cat > docker-compose.ci.yml <<'YAML'
           version: "3.8"
           services:
             postgres:
