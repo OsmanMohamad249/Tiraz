@@ -29,81 +29,49 @@ Purpose: give AI coding agents the minimal, actionable knowledge to be productiv
     - `scripts/run_tests_with_db.sh` (it exports `DATABASE_URL`, generates a strong `SECRET_KEY`, runs `pytest` with `PYTHONPATH=backend`).
   - Run admin portal locally:
     - `cd admin-portal && npm install && npm run dev` (set `NEXT_PUBLIC_API_BASE_URL` to `http://localhost:8000`).
-  - Run mobile app (emulator):
-    - `cd mobile-app && flutter pub get && flutter run` (use `http://10.0.2.2:8000` for Android emulator).
+  <!-- Concise Copilot / AI-agent guidance for Qeyafa -->
+  # Copilot Instructions — Qeyafa (Concise)
 
-- Important conventions and guardrails discovered in code:
-  - Strict settings: backend uses Pydantic `BaseSettings` with strict validation; startup fails if `DATABASE_URL` or `SECRET_KEY` are missing or invalid. Always ensure these are set before running.
-  - SECRET_KEY policy: generate a strong key (>=32 chars). Helper: `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
-  - DB migrations: production schema changes MUST use Alembic (do not call `create_all()` in production). Tests/dev may create tables automatically.
-  - API structure: routes under `backend/api/v1/endpoints/` (auth, users, measurements). Use routers aggregated in `backend/api/v1/api.py`.
-  - Rate limiting: optional but enabled if Redis is available; code in `backend/main.py` will try to init `FastAPILimiter` from `REDIS_URL`.
+  Purpose: give AI coding agents only the repository-specific facts needed to be productive.
 
-- Integration points & environment variables (look here):
-  - `backend/.env.example` — required env vars and templates.
-  - `AI_SERVICE_URL` — backend → AI model service URL (default `http://ai-models:8000`).
-  - `REDIS_URL` — enabling rate limiting.
-  - `DATABASE_URL`, `SECRET_KEY`, `ENVIRONMENT` — control runtime behavior and security.
+  - Project layout (where to look):
+    - `backend/` — FastAPI app (entry `backend/main.py`, config `backend/core/config.py`, routers under `backend/api/v1/`).
+    - `ai-models/` — separate Flask ML service (API: `ai-models/measurement_model/api.py`, `AI_SERVICE_URL` env).
+    - `admin-portal/` — Next.js 14 admin UI (API wrappers in `admin-portal/lib/api/`).
+    - `mobile-app/` — Flutter client (`mobile-app/lib/*`) — uses platform-specific host overrides (Android `10.0.2.2`).
+    - `docker-compose.yml` — recommended local dev: brings up backend, postgres, redis, ai-models.
 
-- Project-specific patterns to follow when changing code:
-  - Keep `backend/` self-contained: tests use `PYTHONPATH=backend` and expect imports relative to that package.
-  - Use Pydantic schemas for request/response validation and SQLAlchemy models for persistence (see `backend/models/` and `backend/schemas/`).
-  - Business logic should live in `backend/services/` rather than in endpoint handlers.
-  - For admin UI API calls, follow `admin-portal/lib/api/*` patterns (Axios client, interceptors, centralized base URL).
-  - Mobile app expects host addresses per platform (`10.0.2.2` for Android emulator); update `mobile-app/lib/utils/app_config.dart` when testing on device.
+  - Quick start commands (most common):
+    - Full stack: `docker compose up --build -d` then `GET http://localhost:8000/health`.
+    - Backend without Docker: `python -m venv .venv && source .venv/bin/activate && pip install -r backend/requirements.txt && cp backend/.env.example backend/.env && set required envs && uvicorn backend.main:app --reload --port 8000`.
+    - Run backend tests (CI helper): `scripts/run_tests_with_db.sh` (sets `PYTHONPATH=backend`, generates `SECRET_KEY`, runs pytest).
 
-- Examples (quick references):
-  - Health check: `GET http://localhost:8000/health` (see `backend/main.py`).
-  - Auth endpoints: `POST /api/v1/auth/login` and `POST /api/v1/auth/register` (see `backend/api/v1/endpoints/auth.py`).
-  - Run full test suite (root): `scripts/run_tests_with_db.sh` or run `pytest backend/tests/` with a configured `DATABASE_URL`.
+  - Key environment and guardrails (do not change silently):
+    - `DATABASE_URL`, `SECRET_KEY` (>=32 chars), `AI_SERVICE_URL`, `REDIS_URL` are authoritative — `backend/pydantic_settings.py` enforces them at startup.
+    - Migrations: use Alembic (`backend/alembic.ini`, `backend/alembic/env.py`). Do not rely on `create_all()` in production.
 
-- Editing & PR guidance for AI agents:
-  - Small, focused changes only. Match existing module patterns (services → endpoints → schemas → models).
-  - Run `scripts/run_tests_with_db.sh` for backend changes that touch DB or Alembic migrations.
-  - If adding env vars, update `backend/.env.example` and document default behavior in `backend/README.md`.
-  - Do not remove or weaken `SECRET_KEY` validation; surface errors occur early in config validation.
+  - Code conventions specific to this repo:
+    - Keep business logic in `backend/services/`; endpoints in `backend/api/v1/endpoints/`; schemas in `backend/schemas/`; models in `backend/models/`.
+    - Tests and CI run with `PYTHONPATH=backend` — imports like `from core.config import settings` depend on that layout.
+    - Admin API client patterns live in `admin-portal/lib/api/` (Axios wrappers, central base URL).
 
-If any of these sections look incomplete or you want more detail about any area (for example particular endpoints, test conventions, or CI workflow), tell me which area to expand and I will iterate.
+  - Important files to inspect for context:
+    - `backend/main.py` — app startup, rate-limiter init, health route.
+    - `backend/core/config.py` (or `backend/pydantic_settings.py`) — all env/settings and defaults.
+    - `backend/api/v1/api.py` and `backend/api/v1/endpoints/*` — route organization.
+    - `ai-models/measurement_model/api.py` — expected AI service endpoints and failure modes used in CI smoke tests.
 
----
+  - CI & debug tips (practical):
+    - CI uses `docker compose up --build -d` and probes `/health` (see `.github/workflows/`).
+    - To collect logs in CI: `docker compose logs --no-color --timestamps backend > backend.logs.txt` and `docker compose cp backend:/app/uploads ./uploads || true`.
+    - If you see import errors in CI, verify `PYTHONPATH=backend` or run from inside `backend/`.
 
-**توسيع: تفاصيل CI وبيئة الاختبار (موجز عربي)**
+  - Short editing & PR rules for agents:
+    - Make small, focused changes; follow services→endpoints→schemas→models layering.
+    - If code touches DB schema, provide Alembic migration and update `backend/.env.example` if new envs are required.
+    - Never weaken `SECRET_KEY` validation or remove strict Pydantic checks — these are intentional guardrails.
 
-فيما يلي تفاصيل عملية CI الحالية وملاحظات عملية للمساعدة في استكشاف الأخطاء وإصلاحها، مستمدة مباشرة من ملفات سير العمل في `.github/workflows/` و`docker-compose.yml`.
-
-- **(أ) تسلسل تنفيذ CI Smoke E2E - Measurements** (`.github/workflows/ci-smoke-measurements.yml`):
-  - Checkout الكود ثم تثبيت أدوات مساعدة بسيطة (`jq`, `curl`).
-  - تشغيل Docker Compose عبر الأمر `docker compose up --build -d` مع حقن متغير `SECRET_KEY` من أسرار GitHub Actions (`secrets.CI_SECRET_KEY`). هذا يشغل الخدمات المعرفة في `docker-compose.yml` (backend, postgres, redis, ai-models, ...).
-  - انتظار صحة الـ backend: حلقة تحقق من `GET http://localhost:8000/health` (حاول حتى 40 مرة مع تأخير 3 ثواني).
-  - تنفيذ اختبار الـ smoke: يقوم السيناريو بإنشاء صورة صغيرة (1x1 PNG) ثم:
-    - تسجيل مستخدم تجريبي (`/api/v1/auth/register`) ثم تسجيل الدخول للحصول على توكن JWT.
-    - POST إلى `/api/v1/measurements/process` مع الصور وحقول `height` و`weight`، ثم التحقق من وجود مفاتيح `measurements` و`confidence_score` ونجاح الاستجابة (HTTP 200).
-    - إجراء تحديث للقياسات عبر `PUT /api/v1/measurements/{id}` ثم حذف القياس والتحقق من السلوك المتوقّع (DELETE => 204, GET بعد الحذف => 404).
-    - سيناريو سلبي: إرسال حقل `force_error=error` ليتوقّع إرجاع 500 من السيرفر عندما تعود خدمة AI بحالة فاشلة.
-  - تحقق استمرارية الحفظ في DB داخل الحاوية بواسطة الأمر:
-    - `docker compose exec -T backend bash -lc "export TEST_EMAIL='${TEST_EMAIL}'; python /workspaces/Qeyafa/backend/ci/check_db.py"`
-  - في النهاية يتم إيقاف حاويات الـ compose باستخدام `docker compose down -v` (يتم دائماً تنفيذها عبر `if: always()` لتضمن التنظيف).
-
-- **(ب) ملاحظات حول `docker-compose.ci.yml` وملفات Compose في CI**
-  - المخرجات الحالية: المشروع لا يحتوي على ملف `docker-compose.ci.yml` مضمّن. سير العمل يستخدم ببساطة `docker compose up --build -d` فافتراضياً يقرأ `docker-compose.yml` في المستودع.
-  - متطلبات شائعة عند بناء ملف Compose مخصص للـ CI:
-    - حقن متغيرات البيئة الحساسة عبر GitHub Secrets: `SECRET_KEY`, `DATABASE_URL` (إن لزم), `AI_SERVICE_URL`, `REDIS_URL`.
-    - استخدم خرائط `volumes` واضحة لالتقاط الملفات التي تريد جمعها (مثل مجلد التحميلات `./backend/uploads` أو مجلدات السجلات). مثال حجم لالتقاط الصور والـ uploads:
-      - في `docker-compose.yml` الحالي: `volumes:\n      - ./backend:/app\n      - upload-data:/app/uploads` → في بيئة runner هذه ستنعكس الملفات ضمن المسار النسبي في workspace أو في حجم Docker المسمى `upload-data`.
-    - إذا تبيّن أن السجلات لا تظهر في artefact، فالأسباب الشائعة: السجلات تُكتب داخل حجم Docker غير مربوط بمجلد على المضيف، أو تم ضغط/حذف الملفات قبل جمعها، أو أن `docker compose logs` لم يُدخَر.
-  - مثال بسيط لكيفية إنشاء `docker-compose.ci.yml` ديناميكياً (في خطوة Workflow) عبر heredoc: 
-    - ضع الملف في وقت التشغيل وتمرّر متغيرات البيئة من Secrets ثم شغّل `docker compose -f docker-compose.ci.yml up --build -d`.
-
-- **(ج) آليات جمع السجلات الموصى بها (ci-logs.tar.gz)**
-  - لا يوجد سكربت جاهز لجمع السجلات في المستودع. خطوات موثوقة لجمع السجلات في GitHub Actions:
-    1. قبل `docker compose down`, اجمع سجلات الحاويات بصيغة زمنية وبدون ألوان:
-       - `docker compose logs --no-color --timestamps backend > backend.logs.txt`
-       - `docker compose logs --no-color --timestamps ai-models > ai-models.logs.txt`
-       - `docker compose logs --no-color --timestamps postgres > postgres.logs.txt`
-    2. انسخ الملفات الموجودة داخل الحاوية إن احتجت للسجلات التي تُكتب إلى ملفات داخل الحاوية (مثال):
-       - `docker compose exec -T backend bash -lc 'cp /app/backend/alembic.log /tmp/alembic.log || true'`
-       - ثم `docker compose cp backend:/tmp/alembic.log ./alembic.log || true`
-    3. اجمع مجلدات التحميلات/النسخ التي تحتاجها (مثل `backend/uploads`):
+  If you'd like, I can: (1) shorten or expand any section, (2) add common example requests for `measurements` endpoints, or (3) generate a small checklist for creating PRs that change DB models. Which would you prefer? 
        - إن كان `upload-data` مرفقاً كمجلد Host (مثل `./backend/uploads`)، تأكد من نسخه: `tar -czf ci-uploads.tar.gz backend/uploads || true`.
        - وإلا استخدم `docker compose cp backend:/app/uploads ./ci-uploads || true`.
     4. أنشئ tar شامل للـ artifacts:

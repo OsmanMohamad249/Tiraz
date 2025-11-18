@@ -93,11 +93,30 @@ def run_migrations_online() -> None:
         # "value too long for type character varying(32)" errors when
         # updating the alembic_version table during upgrades.
         try:
-            connection.execute(sa.text(
-                "ALTER TABLE alembic_version ALTER COLUMN version_num TYPE varchar(255);"
-            ))
+            # Ensure the alembic_version table exists and has a wide-enough
+            # `version_num` column before running migrations. Do this inside an
+            # isolated transaction so failures do not abort the main migration
+            # connection.
+            with connection.begin():
+                # Check existence
+                exists_res = connection.execute(sa.text(
+                    "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='alembic_version');"
+                ))
+                exists = exists_res.scalar()
+                if not exists:
+                    # Create a version table sized to accommodate long revision ids
+                    connection.execute(sa.text(
+                        "CREATE TABLE alembic_version (version_num VARCHAR(255) NOT NULL);"
+                    ))
+                else:
+                    # If it exists, attempt to enlarge the column
+                    connection.execute(sa.text(
+                        "ALTER TABLE alembic_version ALTER COLUMN version_num TYPE varchar(255);"
+                    ))
         except Exception:
-            # Ignore any error (table might not exist yet or DB may not permit alter).
+            # Ignore errors — worst case Alembic will create the table later,
+            # and the inner transaction will have rolled back without aborting
+            # the outer connection.
             pass
         context.configure(connection=connection, target_metadata=target_metadata)
 

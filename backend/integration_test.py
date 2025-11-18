@@ -30,10 +30,10 @@ if login.status_code==200:
     token=login.json().get('access_token')
     hdr={'Authorization':f'Bearer {token}'}
     files = [
-        ('photo_front', ('front.png', open('/tmp/test_front.png','rb'), 'image/png')),
-        ('photo_back', ('back.png', open('/tmp/test_back.png','rb'), 'image/png')),
-        ('photo_left', ('left.png', open('/tmp/test_left.png','rb'), 'image/png')),
-        ('photo_right', ('right.png', open('/tmp/test_right.png','rb'), 'image/png')),
+        ('photo_front', ('front.png', open('tests/fixtures/test_front.png','rb'), 'image/png')),
+        ('photo_back', ('back.png', open('tests/fixtures/test_back.png','rb'), 'image/png')),
+        ('photo_left', ('left.png', open('tests/fixtures/test_left.png','rb'), 'image/png')),
+        ('photo_right', ('right.png', open('tests/fixtures/test_right.png','rb'), 'image/png')),
     ]
     data={'height':'170','weight':'70'}
     try:
