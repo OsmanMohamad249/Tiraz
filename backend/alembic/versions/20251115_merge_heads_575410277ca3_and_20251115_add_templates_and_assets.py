@@ -1,7 +1,7 @@
-"""Merge head revisions 575410277ca3 and 20251115_add_templates_and_assets
+"""Merge head revisions 575410277ca3 and 20251115_templates_assets
 
-Revision ID: 20251115_merge_575410277ca3_and_20251115_add_templates_and_assets
-Revises: 575410277ca3, 20251115_add_templates_and_assets
+Revision ID: 20251115_merge_575410277ca3_and_20251115_templates_assets
+Revises: 575410277ca3, 20251115_templates_assets
 Create Date: 2025-11-15 17:40:00.000000
 
 This is a merge migration whose purpose is to unify two previously
@@ -12,8 +12,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = "20251115_merge_575410277ca3_and_20251115_add_templates_and_assets"
-down_revision = ("575410277ca3", "20251115_add_templates_and_assets")
+revision = "20251115_merge_575410277ca3_and_20251115_templates_assets"
+down_revision = ("575410277ca3", "20251115_templates_assets")
 branch_labels = None
 depends_on = None
 

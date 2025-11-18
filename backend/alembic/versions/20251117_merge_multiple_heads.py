@@ -1,7 +1,7 @@
 """Merge multiple heads
 
 Revision ID: 20251117_merge_heads
-Revises: 20251115_merge_575410277ca3_and_20251115_add_templates_and_assets, 20251116_templates_assets
+Revises: 20251115_merge_575410277ca3_and_20251115_templates_assets, 20251116_templates_assets
 Create Date: 2025-11-17 00:00:00.000000
 
 This is a merge migration to unify the two heads created by parallel development.
@@ -12,7 +12,7 @@ from alembic import op
 # revision identifiers, used by Alembic.
 revision = "20251117_merge_heads"
 down_revision = (
-    "20251115_merge_575410277ca3_and_20251115_add_templates_and_assets",
+    "20251115_merge_575410277ca3_and_20251115_templates_assets",
     "20251116_templates_assets"
 )
 branch_labels = None
