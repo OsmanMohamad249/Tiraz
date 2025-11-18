@@ -122,6 +122,11 @@ jobs:
         run: |
            ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml up --build --wait --timeout 120s
 
+      - name: Ensure alembic_version column size inside backend container
+        run: |
+          # Run the pre-migration script inside the backend container (best-effort)
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend bash -lc 'python /app/scripts/ensure_alembic_version_size.py || true'
+
       - name: Run Smoke Tests
         run: |
           # Use the loaded environment variables for docker compose exec

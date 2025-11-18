@@ -54,6 +54,14 @@ jobs:
         env:
           PGPASSWORD: qeyafa_password
 
+      - name: Ensure alembic_version column size
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: |
+          # Attempt to enlarge alembic_version.version_num to avoid truncation
+          python scripts/ensure_alembic_version_size.py || true
+
       - name: Apply migrations and prepare upload dir
         working-directory: backend
         run: |
