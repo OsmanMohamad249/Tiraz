@@ -124,8 +124,8 @@ jobs:
 
       - name: Run Smoke Tests
         run: |
-          # Use the loaded environment variables for docker-compose exec
-          ${{ steps.load_env.outputs.ENV_VARS }} docker-compose -f docker-compose.ci.yml exec -T backend pytest tests/smoke_tests.py
+          # Use the loaded environment variables for docker compose exec
+          ${{ steps.load_env.outputs.ENV_VARS }} docker compose --env-file .ci/.ci.env -f docker-compose.ci.yml exec -T backend pytest tests/smoke_tests.py
 
       - name: Collect CI logs and artifacts
         if: always()
