@@ -4,6 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+import sqlalchemy as sa
 
 # Import the Base and settings
 import sys
@@ -85,6 +86,19 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
+        # Ensure alembic_version.version_num can store descriptive revision ids.
+        # Some migrations in this repo use long, human-readable revision identifiers
+        # (e.g. '20251115_add_templates_and_assets') which exceed the default
+        # length of 32 characters. Attempt to enlarge the column to avoid
+        # "value too long for type character varying(32)" errors when
+        # updating the alembic_version table during upgrades.
+        try:
+            connection.execute(sa.text(
+                "ALTER TABLE alembic_version ALTER COLUMN version_num TYPE varchar(255);"
+            ))
+        except Exception:
+            # Ignore any error (table might not exist yet or DB may not permit alter).
+            pass
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
