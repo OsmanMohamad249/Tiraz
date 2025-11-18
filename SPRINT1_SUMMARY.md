@@ -8,7 +8,7 @@ Sprint 1 has been successfully completed with a fully functional User Authentica
 ### Backend (FastAPI)
 
 #### Database & ORM
-- **PostgreSQL Integration**: Configured docker-compose with PostgreSQL 15
+-- **PostgreSQL Integration**: Configured Docker Compose (docker compose) with PostgreSQL 15
 - **SQLAlchemy ORM**: Implemented for database operations
 - **User Model**: Complete with UUID primary key, email, hashed password, names, activation status, and timestamps
 - **Alembic Migrations**: Initialized with first migration to create users table
@@ -162,10 +162,10 @@ mobile-app/lib/
 ### Backend
 ```bash
 # Start services
-docker-compose up --build
+docker compose up --build
 
 # Run migrations (in new terminal)
-docker-compose exec backend bash
+docker compose exec backend bash
 cd /app
 alembic upgrade head
 exit

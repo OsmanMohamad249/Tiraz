@@ -43,11 +43,11 @@ fi
 echo ""
 
 # Check Docker Compose
-echo "2. Checking Docker Compose..."
-if command -v docker-compose &> /dev/null || docker compose version &> /dev/null; then
-    print_status 0 "Docker Compose is installed"
+echo "2. Checking Docker Compose (Docker Compose v2 plugin)..."
+if docker compose version &> /dev/null; then
+    print_status 0 "Docker Compose (v2 plugin) is available"
 else
-    print_status 1 "Docker Compose is not installed"
+    print_status 1 "Docker Compose v2 plugin not found (please install/enable it)"
 fi
 echo ""
 

@@ -302,7 +302,7 @@ Finalize Docker setup for local development.
 - [ ] Create troubleshooting guide
 
 **Acceptance Criteria:**
-- All services start with docker-compose up
+- All services start with `docker compose up`
 - Services can communicate
 - Data persists correctly
 - Works on Mac/Linux/Windows

@@ -19,7 +19,7 @@ Purpose: give AI coding agents the minimal, actionable knowledge to be productiv
 
 - Concrete developer workflows (commands you can run):
   - Start full stack locally (recommended):
-    - `docker-compose up --build -d` (runs backend, postgres, redis, ai-models, admin container if defined).
+    - `docker compose up --build -d` (runs backend, postgres, redis, ai-models, admin container if defined).
   - Run backend locally (no Docker):
     - `python -m venv .venv && source .venv/bin/activate`
     - `pip install -r backend/requirements.txt`

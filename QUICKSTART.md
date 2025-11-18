@@ -99,8 +99,8 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
 
 ### Migration error?
 ```bash
-docker-compose down -v
-docker-compose up --build
+docker compose down -v
+docker compose up --build
 # Then run migrations again
 ```
 

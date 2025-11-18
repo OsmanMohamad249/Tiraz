@@ -20,7 +20,7 @@ This guide will help you set up and run the complete Qeyafa authentication syste
 
 ```bash
 # From the project root directory
-docker-compose up --build
+docker compose up --build
 ```
 
 This will start:
@@ -33,7 +33,7 @@ Once the containers are running, open a new terminal and run:
 
 ```bash
 # Access the backend container
-docker-compose exec backend bash
+docker compose exec backend bash
 
 # Run Alembic migrations
 cd /app
@@ -165,7 +165,7 @@ To view the PostgreSQL database:
 
 ```bash
 # Access the database
-docker-compose exec postgres psql -U qeyafa -d qeyafa_db
+docker compose exec postgres psql -U qeyafa -d qeyafa_db
 
 # List tables
 \dt
@@ -182,7 +182,7 @@ SELECT * FROM users;
 ### Backend Issues
 
 **Problem**: Migration fails with "could not translate host name"
-- **Solution**: Make sure the PostgreSQL container is running: `docker-compose ps`
+- **Solution**: Make sure the PostgreSQL container is running: `docker compose ps`
 
 **Problem**: Authentication endpoints return 404
 - **Solution**: Check that the backend container is running and accessible at `http://localhost:8000/docs`

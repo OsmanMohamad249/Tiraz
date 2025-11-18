@@ -18,8 +18,8 @@ This guide covers the development workflow for the Qeyafa MVP application.
 3. **Set Up Development Environment**
    ```bash
    # Start backend services
-   docker-compose up -d
-   
+   docker compose up -d
+  
    # Install mobile app dependencies
    cd mobile-app && npm install
    ```
@@ -357,8 +357,8 @@ lsof -ti:5000 | xargs kill
 **Issue**: MongoDB connection failed
 ```bash
 # Solution
-docker-compose ps  # Check if MongoDB is running
-docker-compose restart mongodb
+docker compose ps  # Check if MongoDB is running
+docker compose restart mongodb
 ```
 
 ### Mobile App

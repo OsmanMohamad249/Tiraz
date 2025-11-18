@@ -168,7 +168,8 @@ interface Category {
 1. **Start Backend** (Terminal 1):
 ```bash
 cd backend
-docker-compose up
+# prefer Docker Compose v2 plugin
+docker compose up
 # or
 python main.py
 ```
@@ -248,7 +249,7 @@ pytest
 - **Static Export**: `npm run build && npm run export`
 
 ### Backend
-- **Docker**: `docker-compose up -d`
+- **Docker**: `docker compose up -d`
 - **Production**: Configure environment variables for production
 
 ---

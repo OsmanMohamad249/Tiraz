@@ -211,7 +211,7 @@ curl http://localhost:8000/health
 **Problem:** `Cannot connect to MongoDB`
 ```bash
 # Solution: Make sure MongoDB is running
-docker-compose ps  # If using Docker
+docker compose ps  # If using Docker
 # or
 mongod --version  # If using local MongoDB
 ```
@@ -276,7 +276,7 @@ npm run android
 
 1. **Start Backend Services**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    # or manually start backend and AI service
    ```
 
