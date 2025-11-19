@@ -6,14 +6,14 @@ class MeasurementService extends ApiService {
   /// Fetch list of measurements
   Future<http.Response> listMeasurements() async {
     final headers = await getAuthHeaders();
-    final uri = Uri.parse('${ApiService.apiBaseUrl}/api/v1/measurements');
+    final uri = Uri.parse('${ApiService.apiBaseUrl}/measurements');
     final resp = await http.get(uri, headers: headers);
     return resp;
   }
 
   /// Upload image file and return response
   Future<http.StreamedResponse> uploadImage(File file) async {
-    final uri = Uri.parse('${ApiService.apiBaseUrl}/api/v1/measurements/upload-image');
+    final uri = Uri.parse('${ApiService.apiBaseUrl}/measurements/upload-image');
     final request = http.MultipartRequest('POST', uri);
     final headers = await getAuthHeaders();
     request.headers.addAll(headers);
@@ -28,7 +28,7 @@ class MeasurementService extends ApiService {
   /// Process measurements with four photos and user height/weight
   /// photos: map with keys 'front','back','left','right'
   Future<http.StreamedResponse> processMeasurements(Map<String, File> photos, double height, double weight, {int retries = 3}) async {
-    final uri = Uri.parse('${ApiService.apiBaseUrl}/api/v1/measurements/process');
+    final uri = Uri.parse('${ApiService.apiBaseUrl}/measurements/process');
     int attempt = 0;
     while (true) {
       attempt += 1;

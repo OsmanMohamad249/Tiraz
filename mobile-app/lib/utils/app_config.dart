@@ -8,7 +8,7 @@ class AppConfig {
   /// - For Physical Device: http://YOUR_MACHINE_IP:8000
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://turbo-umbrella-v6qgvr9x9655hwx97-8000.app.github.dev',
+    defaultValue: 'https://psychic-system-694rg5qjqg7q2rgwj-8000.app.github.dev',
   );
   
   /// API Version Prefix

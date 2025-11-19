@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../measurements/measurements_list_screen.dart';
+import '../designs/designs_list_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   @override
@@ -92,25 +93,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  alignment: WrapAlignment.center,
                   children: [
-                    ElevatedButton(
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.style),
+                      label: Text('Browse Designs'),
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MeasurementsListScreen()));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => DesignsListScreen()),
+                        );
                       },
-                      child: Text('Measurements', style: TextStyle(fontSize: 16)),
-                    ),
-                    SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: _logout,
-                      child: Text('Logout', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.straighten),
+                      label: Text('Measurements'),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MeasurementsListScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.logout),
+                      label: Text('Logout'),
+                      onPressed: _logout,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
                       ),
                     ),
                   ],
@@ -119,7 +138,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           unauthenticated: () => Center(
-            child: Text('Not authenticated'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.storefront, size: 80, color: Colors.blue),
+                SizedBox(height: 24),
+                Text(
+                  'Welcome to Qeyafa',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Browse our latest designs',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                SizedBox(height: 40),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.style),
+                  label: Text('Browse Designs'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => DesignsListScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                  child: Text('Login to Account'),
+                ),
+              ],
+            ),
           ),
           error: (message) => Center(
             child: Column(

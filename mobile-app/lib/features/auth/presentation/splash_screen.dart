@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import '../domain/auth_state.dart';
-import 'login_screen.dart';
 import 'home_screen.dart';
 import '../../../screens/designs/designer_dashboard_screen.dart';
 
@@ -48,15 +47,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           }
         },
         unauthenticated: () {
-          // Navigate to login screen
+          // Navigate to home screen (guest mode)
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
           );
         },
         error: (message) {
-          // Navigate to login screen on error
+          // Navigate to home screen (guest mode) on error
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
           );
         },
       );

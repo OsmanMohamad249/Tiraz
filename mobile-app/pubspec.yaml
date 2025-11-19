@@ -4,22 +4,22 @@ publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ">=2.19.0 <3.0.0"
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  http: ^0.13.5                    # API calls (compatible with Flutter 2.19)
+  http: ^1.2.2                    # API calls (compatible with Flutter 2.19)
   provider: ^6.0.5                 # State management (alternative to Riverpod)
   flutter_riverpod: ^2.3.6        # State management (Riverpod, compatible with 2.19)
   shared_preferences: ^2.1.1       # Local storage (compatible with 2.19)
-  cached_network_image: ^3.2.3     # Image caching (compatible with 2.19)
+  cached_network_image: ^3.4.1     # Image caching (compatible with 2.19)
   flutter_secure_storage: ^8.0.0   # Secure token storage (compatible with 2.19)
   dartz: ^0.10.1                   # Functional programming
   intl: ^0.18.1                    # Internationalization
   freezed_annotation: ^3.1.0       # Freezed annotations for code generation (bumped for regen)
-  file_picker: ^5.2.2             # Pick images/files for upload
+  file_picker: ^6.2.1             # Pick images/files for upload
 
 dev_dependencies:
   flutter_test:

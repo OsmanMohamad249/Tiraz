@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
+import '../../../screens/designs/designs_list_screen.dart';
+import '../../../screens/measurements/measurements_list_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,17 +17,23 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text('Home'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(authStateProvider.notifier).logout();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
+          authState.maybeWhen(
+            authenticated: (_) => IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async {
+                await ref.read(authStateProvider.notifier).logout();
+                // Stay on home screen, state change will trigger UI update to guest view
+              },
+              tooltip: 'Logout',
+            ),
+            orElse: () => TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const LoginScreen()),
                 );
-              }
-            },
-            tooltip: 'Logout',
+              },
+              child: Text('Login', style: TextStyle(color: Colors.white)),
+            ),
           ),
         ],
       ),
@@ -76,29 +84,105 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () async {
-                    await ref.read(authStateProvider.notifier).logout();
-                    if (context.mounted) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
-                    }
-                  },
-                  child: Text('Logout', style: TextStyle(fontSize: 18)),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 16,
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.style),
+                      label: Text('Browse Designs'),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => DesignsListScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
                     ),
-                    backgroundColor: Colors.red,
-                  ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.straighten),
+                      label: Text('Measurements'),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MeasurementsListScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.logout),
+                      label: Text('Logout'),
+                      onPressed: () async {
+                        await ref.read(authStateProvider.notifier).logout();
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           unauthenticated: () => Center(
-            child: Text('Not authenticated'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.storefront, size: 80, color: Colors.blue),
+                SizedBox(height: 24),
+                Text(
+                  'Welcome to Qeyafa',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Browse our latest designs',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                SizedBox(height: 40),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.style),
+                  label: Text('Browse Designs'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => DesignsListScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.upload_file),
+                  label: Text('Upload Measurements'),
+                  onPressed: () {
+                    // Redirect to login since upload requires auth
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please login to upload measurements')),
+                    );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                ),
+              ],
+            ),
           ),
           error: (message) => Center(
             child: Column(
