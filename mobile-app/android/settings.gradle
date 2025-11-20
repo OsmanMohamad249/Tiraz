@@ -9,6 +9,14 @@ pluginManagement {
         if (flutterSdkPath == null) {
             flutterSdkPath = System.getenv("FLUTTER_ROOT")
         }
+        // Fallback for CI if FLUTTER_ROOT is not set but flutter is on PATH
+        if (flutterSdkPath == null) {
+             def flutterPath = "which flutter".execute().text.trim()
+             if (flutterPath) {
+                 flutterSdkPath = new File(flutterPath).parentFile.parentFile.absolutePath
+             }
+        }
+        
         assert flutterSdkPath != null, "flutter.sdk not set in local.properties nor FLUTTER_ROOT environment variable"
         return flutterSdkPath
     }
