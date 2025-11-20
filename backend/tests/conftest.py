@@ -1,6 +1,20 @@
 """
 Pytest configuration for backend tests.
 """
+import sys
+from pathlib import Path
+
+# Add the backend package dir (/app/backend in CI) to sys.path
+# This ensures imports like 'from backend.main import app' or 'import core' inside backend.main resolve correctly.
+# We add both the parent of backend (so 'import backend' works) and backend itself (so 'import main' works if needed).
+backend_path = Path(__file__).resolve().parents[1]
+root_path = backend_path.parent
+
+if str(backend_path) not in sys.path:
+    sys.path.insert(0, str(backend_path))
+if str(root_path) not in sys.path:
+    sys.path.insert(0, str(root_path))
+
 import pytest
 from fastapi.testclient import TestClient
 import os

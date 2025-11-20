@@ -45,6 +45,14 @@ jobs:
           fi
           echo "ENV_FLAG=$ENV_FLAG" >> $GITHUB_ENV
 
+          # Ensure SECRET_KEY is strong for CI. Override any weak/test value from .ci/.ci.env.
+          if [ -z "${SECRET_KEY:-}" ] || [ "$SECRET_KEY" = "test-secret" ]; then
+            # generate a 64-char hex secret (32 bytes)
+            SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+            echo "Generated a strong SECRET_KEY for CI"
+          fi
+          echo "SECRET_KEY=$SECRET_KEY" >> $GITHUB_ENV
+
           # Generate a CI-specific docker-compose file that mounts uploads to the runner
           cat > docker-compose.ci.yml <<'YAML'
           version: '3.8'
@@ -124,7 +132,7 @@ jobs:
 
       - name: Wait for backend health
         run: |
-           docker compose $ENV_FLAG -f docker-compose.ci.yml up --build --wait --timeout 120s
+           docker compose $ENV_FLAG -f docker-compose.ci.yml up --build --wait --timeout 120
 
       - name: Ensure alembic_version column size inside backend container
         run: |
