@@ -41,7 +41,7 @@ jobs:
           echo "FLUTTER_ROOT not set, trying to find it..."
           FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
         fi
-        echo "flutter.sdk=$FLUTTER_ROOT" > mobile-app/android/local.properties
+        echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
 
     - name: Clean build cache
       run: flutter clean
