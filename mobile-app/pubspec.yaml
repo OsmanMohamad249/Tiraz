@@ -21,9 +21,21 @@ dependencies:
   freezed_annotation: ^3.1.0       # Freezed annotations for code generation (bumped for regen)
   file_picker: ^6.2.1             # Pick images/files for upload
 
+  # --- Qeyafa AI & Camera Dependencies ---
+  google_mlkit_pose_detection: ^0.10.0  # The core AI engine
+  camera: ^0.10.5                       # Live camera stream
+  flutter_tts: ^3.8.3                   # Voice guidance
+  image_picker: ^1.0.4                  # Upload photos option
+  # -------------------------------------
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
   build_runner: ^2.4.0             # Code generation tool
   freezed: ^3.2.3                  # Code generator for unions/pattern-matching (bumped)
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
