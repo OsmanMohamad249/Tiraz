@@ -355,7 +355,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
   /// Debug information overlay
   Widget _buildDebugInfo() {
     // Get nose landmark (index 0) for reference Z-depth
-    final noseZDepth = _currentLandmarks.isNotEmpty && _currentLandmarks.length > 0
+    final noseZDepth = _currentLandmarks.isNotEmpty && _currentLandmarks.isNotEmpty
         ? _currentLandmarks[0].z
         : 0.0;
 

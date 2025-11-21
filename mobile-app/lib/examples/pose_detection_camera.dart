@@ -11,7 +11,7 @@ import 'package:qeyafa/core/models/pose_landmark.dart';
 /// - PoseDetectorHelper (Android Native)
 /// - MediaPipe Pose Landmarker
 class PoseDetectionCamera extends StatefulWidget {
-  const PoseDetectionCamera({Key? key}) : super(key: key);
+  const PoseDetectionCamera({super.key});
 
   @override
   State<PoseDetectionCamera> createState() => _PoseDetectionCameraState();

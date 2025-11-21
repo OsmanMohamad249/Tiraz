@@ -8,7 +8,7 @@ import 'package:qeyafa/core/services/vision_service.dart';
 import 'package:qeyafa/core/models/pose_landmark.dart';
 
 class NativePoseDetectionExample extends StatefulWidget {
-  const NativePoseDetectionExample({Key? key}) : super(key: key);
+  const NativePoseDetectionExample({super.key});
 
   @override
   State<NativePoseDetectionExample> createState() =>
