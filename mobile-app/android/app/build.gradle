@@ -62,7 +62,7 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
     
     // MediaPipe Tasks Vision
     implementation 'com.google.mediapipe:tasks-vision:0.10.14'
