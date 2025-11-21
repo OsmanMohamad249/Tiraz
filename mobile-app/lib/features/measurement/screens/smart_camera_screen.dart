@@ -25,8 +25,14 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
   bool _isProcessing = false;
   bool _isPhoneVertical = true;
   List<PoseLandmark> _currentLandmarks = [];
-  double _averageZDepth = 0.0;
   bool _isArabic = true; // Language preference (true = Arabic, false = English)
+  
+  // Auto-capture system
+  int _matchedFramesCount = 0;
+  int _requiredMatchedFrames = 30; // 2 seconds at 15 FPS
+  bool _captureInProgress = false;
+  int _countdownSeconds = 0;
+  Timer? _countdownTimer;
   
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
   StreamSubscription<List<PoseLandmark>>? _poseSubscription;
@@ -56,9 +62,9 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
 
       _cameraController = CameraController(
         camera,
-        ResolutionPreset.high,
+        ResolutionPreset.medium, // Balanced for performance (was 'high')
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420, // Efficient for ML
+        imageFormatGroup: ImageFormatGroup.yuv420, // Required for native processing
       );
 
       await _cameraController!.initialize();
@@ -66,12 +72,10 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
       if (mounted) {
         setState(() {});
         print('✅ Camera initialized: ${camera.name}');
+        
+        // Start streaming camera frames to VisionService
+        _startCameraStream();
       }
-
-      // Start streaming camera frames to native code
-      // Note: Native MediaPipe will process directly from CameraX/AVFoundation
-      // This is a placeholder for triggering the native stream
-      _startCameraStream();
     } catch (e) {
       print('❌ Camera initialization failed: $e');
     }
@@ -88,17 +92,10 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
           if (mounted && !_isProcessing) {
             setState(() {
               _currentLandmarks = landmarks;
-              
-              // Calculate average Z-depth from visible landmarks
-              if (landmarks.isNotEmpty) {
-                final visibleLandmarks = landmarks.where((l) => l.visibility > 0.5);
-                if (visibleLandmarks.isNotEmpty) {
-                  _averageZDepth = visibleLandmarks
-                      .map((l) => l.z)
-                      .reduce((a, b) => a + b) / visibleLandmarks.length;
-                }
-              }
             });
+            
+            // Check for auto-capture
+            _checkForAutoCapture(landmarks);
           }
         },
         onError: (error) {
@@ -112,11 +109,28 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
     }
   }
 
-  /// Start camera stream (trigger native processing)
+  /// Start camera stream and feed frames to VisionService
   void _startCameraStream() {
-    // In production: Pass frames to native via MethodChannel
-    // For now: Native side will handle CameraX/AVFoundation directly
-    print('📷 Camera stream ready for native processing');
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      print('⚠️ Cannot start camera stream - controller not ready');
+      return;
+    }
+
+    try {
+      _cameraController!.startImageStream((CameraImage image) {
+        // Feed camera frames to VisionService for real-time pose detection
+        // VisionService handles frame throttling and native processing
+        VisionService.instance.processFrameFromCamera(
+          image,
+          rotation: 0, // Adjust based on camera orientation if needed
+          frameSkip: 2, // Process every 2nd frame (~15 FPS) for balanced performance
+        );
+      });
+      
+      print('✅ Camera stream started - feeding frames to VisionService');
+    } catch (e) {
+      print('❌ Failed to start camera stream: $e');
+    }
   }
 
   /// Monitor phone orientation using accelerometer
@@ -136,8 +150,149 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
     );
   }
 
+  /// Check if pose is stable and matches guide for auto-capture
+  void _checkForAutoCapture(List<PoseLandmark> landmarks) {
+    if (_captureInProgress) return;
+    
+    // Check if pose matches guide (25+ landmarks visible with >70% confidence)
+    final poseMatches = landmarks.length == 33 &&
+        landmarks.where((l) => l.visibility > 0.7).length >= 25;
+    
+    if (poseMatches && _isPhoneVertical) {
+      _matchedFramesCount++;
+      
+      // Start countdown when half-way to required frames
+      if (_matchedFramesCount == _requiredMatchedFrames ~/ 2) {
+        _startCountdown();
+      }
+      
+      // Trigger capture when requirement met
+      if (_matchedFramesCount >= _requiredMatchedFrames) {
+        _triggerAutoCapture();
+      }
+    } else {
+      // Reset if pose doesn't match
+      _matchedFramesCount = 0;
+      _cancelCountdown();
+    }
+  }
+  
+  /// Start countdown animation
+  void _startCountdown() {
+    if (_countdownTimer != null) return;
+    
+    setState(() {
+      _countdownSeconds = 3;
+    });
+    
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
+      setState(() {
+        _countdownSeconds--;
+      });
+      
+      if (_countdownSeconds <= 0) {
+        timer.cancel();
+        _countdownTimer = null;
+      }
+    });
+  }
+  
+  /// Cancel countdown
+  void _cancelCountdown() {
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
+    
+    if (_countdownSeconds > 0) {
+      setState(() {
+        _countdownSeconds = 0;
+      });
+    }
+  }
+  
+  /// Trigger automatic photo capture
+  Future<void> _triggerAutoCapture() async {
+    if (_captureInProgress) return;
+    
+    setState(() {
+      _captureInProgress = true;
+      _matchedFramesCount = 0;
+    });
+    
+    _cancelCountdown();
+    
+    try {
+      // Stop image stream temporarily
+      await _cameraController?.stopImageStream();
+      
+      // Take the photo
+      final XFile photo = await _cameraController!.takePicture();
+      
+      print('📸 Auto-captured photo: ${photo.path}');
+      
+      // TODO: Process the captured image for measurements
+      // For now, show success feedback
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isArabic ? '✅ تم التقاط الصورة تلقائياً!' : '✅ Photo captured automatically!',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        
+        // Wait a bit before restarting stream
+        await Future.delayed(const Duration(seconds: 2));
+      }
+      
+      // Restart image stream
+      if (mounted && _cameraController != null) {
+        _startCameraStream();
+      }
+    } catch (e) {
+      print('❌ Auto-capture failed: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isArabic ? '❌ فشل التقاط الصورة' : '❌ Failed to capture photo',
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _captureInProgress = false;
+        });
+      }
+    }
+  }
+
   @override
   void dispose() {
+    // Cancel timers
+    _countdownTimer?.cancel();
+    
+    // Stop camera stream before disposing
+    try {
+      _cameraController?.stopImageStream();
+      print('🛑 Camera stream stopped');
+    } catch (e) {
+      print('⚠️ Error stopping camera stream: $e');
+    }
+    
     _accelerometerSubscription?.cancel();
     _poseSubscription?.cancel();
     _cameraController?.dispose();
@@ -166,6 +321,12 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
           // Middle: AR Silhouette Guide Overlay
           _buildAROverlay(),
           
+          // Countdown overlay (when auto-capture is imminent)
+          if (_countdownSeconds > 0) _buildCountdownOverlay(),
+          
+          // Capture progress indicator
+          if (_captureInProgress) _buildCaptureProgressOverlay(),
+          
           // Foreground: Debug Info & Status
           _buildDebugInfo(),
           
@@ -193,6 +354,18 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
 
   /// Debug information overlay
   Widget _buildDebugInfo() {
+    // Get nose landmark (index 0) for reference Z-depth
+    final noseZDepth = _currentLandmarks.isNotEmpty && _currentLandmarks.length > 0
+        ? _currentLandmarks[0].z
+        : 0.0;
+
+    // Check if pose matches guide (all landmarks visible with good confidence)
+    final poseMatches = _currentLandmarks.length == 33 &&
+        _currentLandmarks.where((l) => l.visibility > 0.7).length >= 25;
+
+    // Calculate progress towards auto-capture
+    final captureProgress = _matchedFramesCount / _requiredMatchedFrames;
+
     return Positioned(
       bottom: 20,
       left: 0,
@@ -212,13 +385,13 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
               children: [
                 _buildStatusChip(
                   'Status',
-                  _currentLandmarks.isNotEmpty ? 'Active' : 'Waiting',
-                  _currentLandmarks.isNotEmpty ? Colors.green : Colors.orange,
+                  poseMatches ? 'Match' : (_currentLandmarks.isNotEmpty ? 'Partial' : 'Waiting'),
+                  poseMatches ? Colors.green : (_currentLandmarks.isNotEmpty ? Colors.orange : Colors.grey),
                 ),
                 _buildStatusChip(
-                  'Z-Depth',
-                  _averageZDepth.toStringAsFixed(3),
-                  Colors.blue,
+                  'Nose Z',
+                  noseZDepth.toStringAsFixed(3),
+                  noseZDepth.abs() < 0.5 ? Colors.green : Colors.blue,
                 ),
                 _buildStatusChip(
                   'Landmarks',
@@ -227,6 +400,68 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            // Performance stats
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.speed,
+                  color: Colors.white60,
+                  size: 14,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'FPS: ${VisionService.instance.effectiveFps.toStringAsFixed(1)} | '
+                  'Processed: ${VisionService.instance.processedFrames}',
+                  style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+            // Auto-capture progress bar
+            if (poseMatches && !_captureInProgress) ...[
+              const SizedBox(height: 8),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.camera_alt,
+                        color: Colors.green,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        _isArabic ? 'التقاط تلقائي...' : 'Auto-capture...',
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${(captureProgress * 100).toInt()}%',
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  LinearProgressIndicator(
+                    value: captureProgress,
+                    backgroundColor: Colors.white24,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                    minHeight: 6,
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -341,6 +576,64 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
                 });
               },
               tooltip: _isArabic ? 'Switch to English' : 'التبديل للعربية',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Countdown overlay (3, 2, 1...)
+  Widget _buildCountdownOverlay() {
+    return Center(
+      child: Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.green.withValues(alpha: 0.9),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.withValues(alpha: 0.5),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            '$_countdownSeconds',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 72,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Capture in progress overlay
+  Widget _buildCaptureProgressOverlay() {
+    return Container(
+      color: Colors.black.withValues(alpha: 0.7),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(
+              color: Colors.green,
+              strokeWidth: 6,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              _isArabic ? 'جاري التقاط الصورة...' : 'Capturing photo...',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

@@ -4,7 +4,8 @@ import '../../../core/models/pose_landmark.dart';
 /// Custom painter that draws AR silhouette guide overlay.
 ///
 /// Visual Guide:
-/// - GREEN outline: Phone is vertical (correct orientation)
+/// - GREEN outline: Phone is vertical AND pose matches (correct)
+/// - YELLOW outline: Phone is vertical BUT pose doesn't match (partial)
 /// - RED outline: Phone is tilted (incorrect orientation)
 /// - Semi-transparent white: Default guide shape
 class SilhouettePainter extends CustomPainter {
@@ -16,18 +17,37 @@ class SilhouettePainter extends CustomPainter {
     required this.landmarks,
   });
 
+  /// Check if the detected pose matches the silhouette guide
+  bool get _poseMatchesGuide {
+    if (landmarks.length != 33) return false;
+    
+    // Check if most landmarks are visible with good confidence
+    final visibleLandmarks = landmarks.where((l) => l.visibility > 0.7).length;
+    return visibleLandmarks >= 25; // At least 25 out of 33 landmarks visible
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
+    // Determine color based on orientation and pose match
+    final Color outlineColor;
+    if (!isPhoneVertical) {
+      outlineColor = Colors.red.withValues(alpha: 0.6);
+    } else if (_poseMatchesGuide) {
+      outlineColor = Colors.green.withValues(alpha: 0.8); // Brighter green when matched
+    } else {
+      outlineColor = Colors.yellow.withValues(alpha: 0.6); // Yellow when vertical but not matched
+    }
+
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..color = isPhoneVertical 
-          ? Colors.green.withValues(alpha: 0.6)
-          : Colors.red.withValues(alpha: 0.6);
+      ..strokeWidth = _poseMatchesGuide ? 4.0 : 3.0 // Thicker when matched
+      ..color = outlineColor;
 
     final fillPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.white.withValues(alpha: 0.1);
+      ..color = _poseMatchesGuide 
+          ? Colors.green.withValues(alpha: 0.15) // Green fill when matched
+          : Colors.white.withValues(alpha: 0.1);
 
     // Center position for silhouette
     final centerX = size.width / 2;
