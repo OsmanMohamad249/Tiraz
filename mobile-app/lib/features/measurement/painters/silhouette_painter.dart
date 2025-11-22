@@ -38,11 +38,11 @@ class SilhouettePainter extends CustomPainter {
     // Determine color based on orientation and pose match
     final Color outlineColor;
     if (!isPhoneVertical) {
-      outlineColor = Colors.red.withValues(alpha: 0.6);
+      outlineColor = Colors.red.withOpacity(0.6);
     } else if (_poseMatchesGuide) {
-      outlineColor = Colors.green.withValues(alpha: 0.8); // Brighter green when matched
+      outlineColor = Colors.green.withOpacity(0.8); // Brighter green when matched
     } else {
-      outlineColor = Colors.yellow.withValues(alpha: 0.6); // Yellow when vertical but not matched
+      outlineColor = Colors.yellow.withOpacity(0.6); // Yellow when vertical but not matched
     }
 
     final paint = Paint()
@@ -53,8 +53,8 @@ class SilhouettePainter extends CustomPainter {
     final fillPaint = Paint()
       ..style = PaintingStyle.fill
       ..color = _poseMatchesGuide 
-          ? Colors.green.withValues(alpha: 0.15) // Green fill when matched
-          : Colors.white.withValues(alpha: 0.1);
+          ? Colors.green.withOpacity(0.15) // Green fill when matched
+          : Colors.white.withOpacity(0.1);
 
     // Center position for silhouette
     final centerX = size.width / 2;
@@ -229,7 +229,7 @@ class SilhouettePainter extends CustomPainter {
   void _drawLandmarks(Canvas canvas, Size size, List<PoseLandmark> landmarks) {
     final landmarkPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.cyan.withValues(alpha: 0.8);
+      ..color = Colors.cyan.withOpacity(0.8);
 
     for (final landmark in landmarks) {
       // Skip landmarks with low visibility
@@ -254,7 +254,7 @@ class SilhouettePainter extends CustomPainter {
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5
-          ..color = Colors.cyan.withValues(alpha: 0.3),
+          ..color = Colors.cyan.withOpacity(0.3),
       );
     }
   }

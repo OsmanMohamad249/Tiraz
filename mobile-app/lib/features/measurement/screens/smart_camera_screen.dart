@@ -513,10 +513,10 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.8),
+          color: Colors.black.withOpacity(0.8),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.3),
+            color: Colors.white.withOpacity(0.3),
             width: 1,
           ),
         ),
@@ -538,7 +538,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
                 Text(
                   '${controller.completedSteps}/${controller.totalSteps}',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: 16,
                   ),
                 ),
@@ -552,7 +552,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
                 value: controller.progress,
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                backgroundColor: Colors.white.withOpacity(0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   controller.progress == 1.0 
                     ? Colors.green 
@@ -581,7 +581,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
                   Text(
                     _isArabic ? 'ثابت...' : 'Hold steady...',
                     style: TextStyle(
-                      color: Colors.green.withValues(alpha: 0.8),
+                      color: Colors.green.withOpacity(0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -615,7 +615,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.7),
+          color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -725,7 +725,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.3),
+            color: color.withOpacity(0.3),
             borderRadius: BorderRadius.circular(6),
             border: Border.all(color: color, width: 1),
           ),
@@ -761,8 +761,8 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: _isPhoneVertical 
-              ? Colors.green.withValues(alpha: 0.8) 
-              : Colors.red.withValues(alpha: 0.8),
+              ? Colors.green.withOpacity(0.8) 
+              : Colors.red.withOpacity(0.8),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -832,10 +832,10 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         height: 120,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.green.withValues(alpha: 0.9),
+          color: Colors.green.withOpacity(0.9),
           boxShadow: [
             BoxShadow(
-              color: Colors.green.withValues(alpha: 0.5),
+              color: Colors.green.withOpacity(0.5),
               blurRadius: 20,
               spreadRadius: 5,
             ),
@@ -858,7 +858,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
   /// Capture in progress overlay
   Widget _buildCaptureProgressOverlay() {
     return Container(
-      color: Colors.black.withValues(alpha: 0.7),
+      color: Colors.black.withOpacity(0.7),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -891,7 +891,7 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         width: 100,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.7),
+          color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white24, width: 1),
         ),
