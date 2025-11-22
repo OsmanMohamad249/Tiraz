@@ -1,0 +1,85 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'mobile-app/**'
+  workflow_dispatch: # يمكنك تشغيله يدوياً
+
+jobs:
+  build-apk:
+    name: Build Flutter APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        working-directory: ./mobile-app
+        run: flutter pub get
+      
+      - name: Analyze code
+        working-directory: ./mobile-app
+        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+      
+      - name: Build APK (Debug)
+        working-directory: ./mobile-app
+        run: flutter build apk --debug
+      
+      - name: Build APK (Release)
+        working-directory: ./mobile-app
+        run: flutter build apk --release
+      
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: qeyafa-debug
+          path: mobile-app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
+      
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: qeyafa-release
+          path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+      
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0-beta-${{ github.run_number }}
+          name: Qeyafa Mobile v1.0.0-beta-${{ github.run_number }}
+          body: |
+            ## 📱 Qeyafa Mobile App
+            
+            **Build Date:** ${{ github.event.head_commit.timestamp }}
+            **Commit:** ${{ github.sha }}
+            
+            ### تنزيل التطبيق:
+            - **النسخة التجريبية (Debug):** حجم أكبر، مع أدوات التطوير
+            - **النسخة النهائية (Release):** محسّنة للأداء، حجم أصغر
+            
+            ### ملاحظات:
+            - يتطلب Android 7.0 (API 24) أو أحدث
+            - يحتاج صلاحية الكاميرا للعمل
+          files: |
+            mobile-app/build/app/outputs/flutter-apk/app-debug.apk
+            mobile-app/build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
