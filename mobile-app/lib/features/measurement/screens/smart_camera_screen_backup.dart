@@ -31,19 +31,12 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
   bool _isArabic = true; // Language preference (true = Arabic, false = English)
   
   // Multi-pose flow controller
-  MeasurementFlowController? _flowController;
-  bool _useMultiPoseMode = false; // Toggle between single and multi-pose
+  late MeasurementFlowController _flowController;
   
-  // Auto-capture system
-  int _matchedFramesCount = 0;
-  int _requiredMatchedFrames = 30; // 2 seconds at 15 FPS
-  bool _captureInProgress = false;
-  int _countdownSeconds = 0;
-  Timer? _countdownTimer;
-  
-  // Stability counter for auto-capture
+  // Auto-capture system with stability counter
   int _stabilityCounter = 0;
   final int _requiredStableFrames = 45; // 3 seconds at 15 FPS
+  bool _isAutoCapturing = false;
   
   // Measurement system
   final TextEditingController _heightController = TextEditingController(text: '170');
