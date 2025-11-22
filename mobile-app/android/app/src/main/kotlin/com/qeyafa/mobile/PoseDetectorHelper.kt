@@ -72,7 +72,8 @@ class PoseDetectorHelper(
                 .setMinPosePresenceConfidence(DEFAULT_MIN_PRESENCE_CONFIDENCE)
                 .setMinTrackingConfidence(DEFAULT_MIN_TRACKING_CONFIDENCE)
                 .setResultListener { result, input ->
-                    handlePoseResult(result, input.timestamp)
+                    // Use System.currentTimeMillis() instead of input.timestamp (which is private)
+                    handlePoseResult(result, System.currentTimeMillis())
                 }
                 .setErrorListener { error ->
                     Log.e(TAG, "❌ MediaPipe error: ${error.message}")
