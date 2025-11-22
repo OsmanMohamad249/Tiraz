@@ -212,9 +212,9 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "🛑 Activity stopping - cleaning up resources")
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "🛑 Activity destroyed - cleaning up resources")
         poseDetectorHelper?.dispose()
         poseDetectorHelper = null
         eventSink = null
