@@ -258,19 +258,21 @@ class BodyCalculator {
   }
 
   /// حساب طول الساق الداخلي (Inseam)
+  /// من منتصف الورك إلى الكعب (45-48% من الطول الكلي)
   static double _calculateRawInseam(List<PoseLandmark> landmarks) {
-    // نستخدم الساق اليمنى
-    final hip = landmarks[24]; // الورك الأيمن
-    final knee = landmarks[26]; // الركبة اليمنى
-    final ankle = landmarks[28]; // الكاحل الأيمن
+    final leftHip = landmarks[23];
+    final rightHip = landmarks[24];
+    final leftHeel = landmarks[29];
+    final rightHeel = landmarks[30];
 
-    // طول الفخذ
-    final thigh = _distance3D(hip, knee);
+    // منتصف الوركين (نقطة الانطلاق للساق الداخلي)
+    final hipMid = _midpoint(leftHip, rightHip);
 
-    // طول الساق السفلى
-    final shin = _distance3D(knee, ankle);
+    // منتصف الكعبين (نقطة النهاية على الأرض)
+    final heelMid = _midpoint(leftHeel, rightHeel);
 
-    return thigh + shin;
+    // المسافة المباشرة من منتصف الورك إلى الأرض
+    return _distance3D(hipMid, heelMid);
   }
 
   // ==================== وظائف مساعدة ====================
