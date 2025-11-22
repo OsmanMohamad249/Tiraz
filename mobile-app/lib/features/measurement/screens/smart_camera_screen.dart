@@ -6,7 +6,7 @@ import '../../../core/services/vision_service.dart';
 import '../../../core/models/pose_landmark.dart';
 import '../painters/silhouette_painter.dart';
 import '../logic/body_calculator.dart';
-import '../data/measurement_result.dart';
+import 'measurement_result_screen.dart';
 
 /// Smart Camera Screen with AR Overlay for body measurement.
 ///
@@ -38,8 +38,6 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
   
   // Measurement system
   final TextEditingController _heightController = TextEditingController(text: '170');
-  MeasurementResult? _lastMeasurement;
-  bool _showMeasurementDialog = false;
   
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
   StreamSubscription<List<PoseLandmark>>? _poseSubscription;
@@ -251,14 +249,13 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
             userManualHeightCm: userHeight,
           );
           
-          if (measurement != null) {
-            setState(() {
-              _lastMeasurement = measurement;
-              _showMeasurementDialog = true;
-            });
-            
-            // Show measurement dialog
-            _showMeasurementResultDialog(measurement);
+          if (measurement != null && mounted) {
+            // Navigate to result screen
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => MeasurementResultScreen(result: measurement),
+              ),
+            );
           } else {
             _showErrorSnackbar(_isArabic 
               ? '❌ فشل حساب القياسات - تأكد من وضوح الصورة' 
@@ -301,168 +298,6 @@ class _SmartCameraScreenState extends State<SmartCameraScreen> {
         });
       }
     }
-  }
-
-  /// Show measurement result dialog
-  void _showMeasurementResultDialog(MeasurementResult result) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Row(
-                  children: [
-                    Icon(Icons.straighten, color: Colors.green, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _isArabic ? 'نتائج القياسات' : 'Measurement Results',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                const Divider(height: 24),
-                // Measurements
-                _buildMeasurementRow('1️⃣', _isArabic ? 'الطول الكلي' : 'Total Height', result.totalHeight),
-                _buildMeasurementRow('2️⃣', _isArabic ? 'عرض الكتفين' : 'Shoulder Width', result.shoulderWidth),
-                _buildMeasurementRow('3️⃣', _isArabic ? 'محيط الصدر' : 'Chest', result.chestCircumference),
-                _buildMeasurementRow('4️⃣', _isArabic ? 'محيط الخصر' : 'Waist', result.waistCircumference),
-                _buildMeasurementRow('5️⃣', _isArabic ? 'محيط الوركين' : 'Hips', result.hipCircumference),
-                _buildMeasurementRow('6️⃣', _isArabic ? 'طول الذراع' : 'Arm Length', result.armLength),
-                _buildMeasurementRow('7️⃣', _isArabic ? 'المسافة الداخلية' : 'Inseam', result.inseam),
-                const SizedBox(height: 16),
-                // Calibration type
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.tune, size: 16, color: Colors.blue.shade700),
-                      const SizedBox(width: 6),
-                      Text(
-                        result.calibrationType == CalibrationType.manualHeight
-                          ? (_isArabic ? 'معايرة يدوية' : 'Manual Calibration')
-                          : (_isArabic ? 'معايرة بطاقة' : 'Card Calibration'),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.blue.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Action buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.refresh),
-                        label: Text(_isArabic ? 'إعادة القياس' : 'Re-measure'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          setState(() {
-                            _lastMeasurement = null;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.save),
-                        label: Text(_isArabic ? 'حفظ' : 'Save'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          // TODO: Save measurements to backend
-                          Navigator.of(context).pop();
-                          _showSuccessSnackbar(_isArabic 
-                            ? '✅ تم حفظ القياسات' 
-                            : '✅ Measurements saved');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-  
-  /// Build measurement row widget
-  Widget _buildMeasurementRow(String emoji, String label, double value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          Text(
-            '${value.toStringAsFixed(1)} ${_isArabic ? "سم" : "cm"}',
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  /// Show success snackbar
-  void _showSuccessSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
   
   /// Show error snackbar
